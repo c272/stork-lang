@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace stork
@@ -33,21 +34,21 @@ namespace stork
                 return;
             }
 
+            //Stripping string of all endline characters.
+            file = Regex.Replace(file, @"\r\n?|\n", "");
+            Console.WriteLine(file);
+
             //File is now loaded in, pass it to the lexer.
             StorkLexer lexer = new stork.StorkLexer();
             foreach (char c in file)
             {
                 lexer.feed(c);
             }
-
-            List<string> slist = lexer.getStringList();
-            List<Type> tlist = lexer.getTypeList();
-
-            Console.WriteLine(slist.Count);
-            for (int i=0; i<slist.Count; i++)
+            
+            //Output lexer contents.
+            for (int i=0; i<lexer.lexerList.Count; i++)
             {
-                Console.WriteLine(slist[i]);
-                Console.WriteLine(tlist[i]);
+                Console.WriteLine(lexer.lexerList[i].type+" -> \""+lexer.lexerList[i].item+"\"");
             }
         }
     }

@@ -10,14 +10,33 @@ namespace stork
     //"Type" enumeration.
     enum Type
     {
-        identifier,
-        import_token,
+        preprocess_identifier,
+        preprocess_directive,
         _string,
-        _symbol,
-        number,
-        in_statement,
-        vartype,
-        nulltype
+        endline,
+        unknown_identifier
+    }
+
+    //"Lexer state" enumeration.
+    enum LexerState
+    {
+        DEFAULT,
+        IN_STRING
+    }
+
+    //The LexerItem struct.
+    class LexerItem
+    {
+        //Basic constructor. Item contents are not required, so are an optional parameter.
+        public LexerItem(Type _type, string _item="")
+        {
+            type = _type;
+            item = _item;
+        }
+
+        //Properties.
+        public string item = "";
+        public Type type;
     }
 
     class StorkLexer
@@ -31,79 +50,74 @@ namespace stork
         //"Feed" function, which lets the main program feed input into the lexer.
         public void feed(char c)
         {
-            //Checking if the statement is over. If not, add to current statement.
-            if (c==' '||c=='('||c=='{'||c==';')
+            //Incrementing token.
+            token += c;
+
+            //Checking if currently inside a string.
+            if (lexerState != LexerState.IN_STRING)
             {
-                Console.WriteLine("FIRED");
-                //Statement over, end statement and pass to the type interpreter.
-                interpretType(currentStatement);
-                //Reset currentStatement to blank.
-                currentStatement = "";
+                //Checking token against a table.
+                switch (token)
+                {
+                    case " ":
+                        //Reset, ignore whitespace.
+                        token = "";
+                        break;
+                    case "~":
+                        //Preprocess character detected, add to lexer list and reset token.
+                        addToList(Type.preprocess_identifier);
+                        token = "";
+                        break;
+                    case ";":
+                        //End of line character detected, add to list and reset.
+                        addToList(Type.endline);
+                        token = "";
+                        break;
+                    case "import ":
+                        //Import keyword detected, put inside list and reset.
+                        addToList(Type.preprocess_directive, token.Substring(0, token.Length-1));
+                        token = "";
+                        break;
+                    case "\"":
+                        //String initiation detected. Reset token and change state.
+                        lexerState = LexerState.IN_STRING;
+                        token = "";
+                        break;
+                    default:
+                        //Checking if current char is a space.
+                        if (c==' ')
+                        {
+                            //Yes, we're at the end of a keyword and it's unrecognised.
+                            //Assume it's a variable/function identifier, and push.
+                            addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            token = "";
+                        }
+                        //It's not, could still be in the middle of a string.
+                        break;
+                }
             } else
             {
-                currentStatement += c;
+                //Yeah, inside a string. If the character isn't a quote closing it,
+                //ignore everything and just keep adding to token.
+                if (c=='\"')
+                {
+                    //Return to default state, reset token and push to list.
+                    lexerState = LexerState.DEFAULT;
+                    addToList(Type._string, token.Substring(0, token.Length - 1));
+                    token = "";
+                }
             }
         }
 
-        public void interpretType(string s)
+        //Developer function, adds a specific item to the lexer list by hand.
+        public void addToList(Type type, string item="")
         {
-            Type typeOut;
-            //Switching to determine type.
-            switch (s)
-            {
-                case "void":
-                    typeOut = Type.nulltype;
-                    break;
-                case "int":
-                case "float":
-                case "bool":
-                case "string":
-                    typeOut = Type.vartype;
-                    break;
-                default:
-                    //Checking if it's a string.
-                    Regex stringReg = new Regex("^\\\"(\\w+)\\\"\\z");
-                    if (stringReg.IsMatch(s))
-                    {
-                        //Valid, type as string.
-                        typeOut = Type._string;
-                        s = s.Substring(1);
-                        s = s.Remove(s.Length - 1);
-                        
-                        //Send to the event list.
-                        lexerTypeList.Add(typeOut);
-                        lexerStringList.Add(s);
-                        return;
-                    }
-
-                    //Checking if it's an import command.
-                    Regex importReg = new Regex("^~import\\z");
-                    if (importReg.IsMatch(s))
-                    {
-                        //It's an import, type as such and push to event list.
-                        typeOut = Type.import_token;
-                        lexerTypeList.Add(typeOut);
-                        lexerStringList.Add(s);
-                    }
-
-                    //Not a string.
-                    break;
-            }
-        }
-
-        //Getters for the type and string list.
-        public List<Type> getTypeList()
-        {
-            return lexerTypeList;
-        }
-        public List<string> getStringList()
-        {
-            return lexerStringList;
+            lexerList.Add(new stork.LexerItem(type, item));
         }
 
         //Private lexer properties.
-        private string currentStatement;
-        private List<Type> lexerTypeList = new List<Type>();
-        private List<string> lexerStringList = new List<string>();
+        string token = "";
+        public List<LexerItem> lexerList = new List<LexerItem>();
+        LexerState lexerState;
     }
 }
