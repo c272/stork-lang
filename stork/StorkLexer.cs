@@ -26,7 +26,10 @@ namespace stork
         float_literal,
         int_literal,
         boolean_literal,
-        equals
+        equals,
+        accessor_symbol,
+        binary_and,
+        binary_or
     }
 
     //"Lexer state" enumeration.
@@ -61,24 +64,33 @@ namespace stork
         }
 
         //Search for a literal in the string given.
-        public bool findLiteral(string token)
+        public bool findLiteral(string token, bool noListAdds = false)
         {
+            //Trimming spaces from the token. If it's a literal, it won't have spaces.
+            token = token.Replace(" ", "");
+
             //Reached the end of a line, checking for literals.
             bool foundLiteral = false;
             try
             {
-                float.Parse(token.Substring(0, token.Length - 1));
+                float.Parse(token.Substring(0, token.Length));
                 foundLiteral = true;
-                addToList(Type.float_literal, token.Substring(0, token.Length - 1));
+                if (!noListAdds)
+                {
+                    addToList(Type.float_literal, token.Substring(0, token.Length));
+                }
             }
             catch (Exception)
             {
                 //Not a float, try integer.
                 try
                 {
-                    int.Parse(token.Substring(0, token.Length - 1));
+                    int.Parse(token.Substring(0, token.Length));
                     foundLiteral = true;
-                    addToList(Type.int_literal, token.Substring(0, token.Length - 1));
+                    if (!noListAdds)
+                    {
+                        addToList(Type.int_literal, token.Substring(0, token.Length));
+                    }
                 }
                 catch (Exception) { }
             }
@@ -142,6 +154,11 @@ namespace stork
                         lexerState = LexerState.IN_COMMENT;
                         token = "";
                         break;
+                    case "&&":
+                        //Binary AND detected, push and reset.
+                        addToList(Type.binary_and);
+                        token = "";
+                        break;
                     case "if ":
                         //If statement detected.
                         addToList(Type.if_statement);
@@ -173,13 +190,13 @@ namespace stork
                         break;
                     default:
                         //Checking if current char is a space or a function call bracket.
-                        if (c==' ')
+                        if (c == ' ')
                         {
                             //Yes, we're at the end of a keyword and it's unrecognised.
                             //Assume it's a variable/function identifier, and push.
                             addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
                             token = "";
-                        } else if (c=='(')
+                        } else if (c == '(')
                         {
                             //Check for if/else if/while statements, etc.
                             bool foundI = false;
@@ -207,7 +224,7 @@ namespace stork
                             }
                             addToList(Type.statement_open);
                             token = "";
-                        } else if (c==')')
+                        } else if (c == ')')
                         {
                             //Check literal.
                             bool foundLiteral = findLiteral(token);
@@ -219,7 +236,7 @@ namespace stork
                             }
                             addToList(Type.statement_close);
                             token = "";
-                        } else if (c=='=')
+                        } else if (c == '=')
                         {
                             //Checking for literals.
                             bool foundLiteral = findLiteral(token);
@@ -235,7 +252,7 @@ namespace stork
                         }
 
                         //Checking if character is an end of line.
-                        if (c == ';')
+                        else if (c == ';')
                         {
                             bool foundLiteral = findLiteral(token);
 
@@ -251,6 +268,29 @@ namespace stork
                             addToList(Type.endline);
 
                             //Resetting token.
+                            token = "";
+                        } else if (c == '.')
+                        {
+                            //Detected an accessor symbol.
+                            //Checking if after a number. If it is, don't put in an accessor.
+                            if (!findLiteral(token.Substring(0, token.Length - 1), true))
+                            {
+                                addToList(Type.accessor_symbol);
+                                token = "";
+                            }
+                        } else if (token.Length>=2 && token.Substring(token.Length-2)=="&&")
+                        {
+                            //Detected a binary AND symbol. Pushing and resetting.
+                            //Checking for literal.
+                            Console.WriteLine("BNAND: " + token.Substring(0, token.Length - 2));
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 2));
+                            if (!foundLiteral)
+                            {
+                                //No literal found, assuming unknown identifier and adding to list.
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 2));
+                            }
+
+                            addToList(Type.binary_and);
                             token = "";
                         }
 
