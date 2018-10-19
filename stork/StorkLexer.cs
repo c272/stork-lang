@@ -14,7 +14,19 @@ namespace stork
         preprocess_directive,
         _string,
         endline,
-        unknown_identifier
+        unknown_identifier,
+        statement_open,
+        statement_close,
+        block_open,
+        block_close,
+        variable_identifier,
+        if_statement,
+        elseif_statement,
+        while_statement,
+        float_literal,
+        int_literal,
+        boolean_literal,
+        equals
     }
 
     //"Lexer state" enumeration.
@@ -47,6 +59,32 @@ namespace stork
 
         }
 
+        //Search for a literal in the string given.
+        public bool findLiteral(string token)
+        {
+            //Reached the end of a line, checking for literals.
+            bool foundLiteral = false;
+            try
+            {
+                float.Parse(token.Substring(0, token.Length - 1));
+                foundLiteral = true;
+                addToList(Type.float_literal, token.Substring(0, token.Length - 1));
+            }
+            catch (Exception)
+            {
+                //Not a float, try integer.
+                try
+                {
+                    int.Parse(token.Substring(0, token.Length - 1));
+                    foundLiteral = true;
+                    addToList(Type.int_literal, token.Substring(0, token.Length - 1));
+                }
+                catch (Exception) { }
+            }
+
+            return foundLiteral;
+        }
+
         //"Feed" function, which lets the main program feed input into the lexer.
         public void feed(char c)
         {
@@ -73,6 +111,50 @@ namespace stork
                         addToList(Type.endline);
                         token = "";
                         break;
+                    case "(":
+                        //Open statement character detected, add to list and reset.
+                        addToList(Type.statement_open);
+                        token = "";
+                        break;
+                    case ")":
+                        //Close statement character detected.
+                        addToList(Type.statement_close);
+                        token = "";
+                        break;
+                    case "{":
+                        //Open block character detected, add to list.
+                        addToList(Type.block_open);
+                        token = "";
+                        break;
+                    case "}":
+                        //Close block character detected, add to list.
+                        addToList(Type.block_close);
+                        token = "";
+                        break;
+                    case "=":
+                        //Equals character detected, push.
+                        addToList(Type.equals);
+                        token = "";
+                        break;
+                    case "if ":
+                        //If statement detected.
+                        addToList(Type.if_statement);
+                        token = "";
+                        break;
+                    case "int ":
+                    case "float ":
+                    case "bool ":
+                    case "gen ":
+                        //Variable keyword detected. Add to list.
+                        addToList(Type.variable_identifier, token.Substring(0, token.Length - 1));
+                        token = "";
+                        break;
+                    case "true":
+                    case "false":
+                        //Boolean literal detected. Add to list.
+                        addToList(Type.boolean_literal, token);
+                        token = "";
+                        break;
                     case "import ":
                         //Import keyword detected, put inside list and reset.
                         addToList(Type.preprocess_directive, token.Substring(0, token.Length-1));
@@ -84,15 +166,89 @@ namespace stork
                         token = "";
                         break;
                     default:
-                        //Checking if current char is a space.
+                        //Checking if current char is a space or a function call bracket.
                         if (c==' ')
                         {
                             //Yes, we're at the end of a keyword and it's unrecognised.
                             //Assume it's a variable/function identifier, and push.
                             addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
                             token = "";
+                        } else if (c=='(')
+                        {
+                            //Check for if/else if/while statements, etc.
+                            bool foundI = false;
+                            string tok = token.Substring(0, token.Length - 1);
+                            switch (tok)
+                            {
+                                case "if":
+                                    addToList(Type.if_statement);
+                                    foundI = true;
+                                    break;
+                                case "else if":
+                                    addToList(Type.elseif_statement);
+                                    foundI = true;
+                                    break;
+                                case "while":
+                                    addToList(Type.while_statement);
+                                    foundI = true;
+                                    break;
+                            }
+
+                            //If not found, assume unknown identifier.
+                            if (!foundI)
+                            {
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            }
+                            addToList(Type.statement_open);
+                            token = "";
+                        } else if (c==')')
+                        {
+                            //Check literal.
+                            bool foundLiteral = findLiteral(token);
+
+                            //Assume end of function call.
+                            if (!foundLiteral)
+                            {
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            }
+                            addToList(Type.statement_close);
+                            token = "";
+                        } else if (c=='=')
+                        {
+                            //Checking for literals.
+                            bool foundLiteral = findLiteral(token);
+                            if (!foundLiteral) {
+                                //Assuming unknown identifier.
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            }
+
+                            //Adding an equals.
+                            addToList(Type.equals);
+                            //Resetting token.
+                            token = "";
                         }
-                        //It's not, could still be in the middle of a string.
+
+                        //Checking if character is an end of line.
+                        if (c == ';')
+                        {
+                            bool foundLiteral = findLiteral(token);
+
+                            //Checking if literal has been found.
+                            if (!foundLiteral)
+                            {
+                                //No literal found.
+                                //Assuming it's some unknown identifier, and marking as such.
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            }
+
+                            //Add an endline.
+                            addToList(Type.endline);
+
+                            //Resetting token.
+                            token = "";
+                        }
+
+                        //Unknown symbol/token or is unfinished, so skip it.
                         break;
                 }
             } else
