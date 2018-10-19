@@ -33,7 +33,8 @@ namespace stork
     enum LexerState
     {
         DEFAULT,
-        IN_STRING
+        IN_STRING,
+        IN_COMMENT
     }
 
     //The LexerItem struct.
@@ -91,8 +92,8 @@ namespace stork
             //Incrementing token.
             token += c;
 
-            //Checking if currently inside a string.
-            if (lexerState != LexerState.IN_STRING)
+            //Checking if currently in default state (not in string/comment etc.)
+            if (lexerState == LexerState.DEFAULT)
             {
                 //Checking token against a table.
                 switch (token)
@@ -134,6 +135,11 @@ namespace stork
                     case "=":
                         //Equals character detected, push.
                         addToList(Type.equals);
+                        token = "";
+                        break;
+                    case "//":
+                        //Comment start detected, set state.
+                        lexerState = LexerState.IN_COMMENT;
                         token = "";
                         break;
                     case "if ":
@@ -253,14 +259,27 @@ namespace stork
                 }
             } else
             {
-                //Yeah, inside a string. If the character isn't a quote closing it,
-                //ignore everything and just keep adding to token.
-                if (c=='\"')
+                //Checking the state of the lexer.
+                if (lexerState == LexerState.IN_STRING)
                 {
-                    //Return to default state, reset token and push to list.
-                    lexerState = LexerState.DEFAULT;
-                    addToList(Type._string, token.Substring(0, token.Length - 1));
-                    token = "";
+                    //Yeah, inside a string. If the character isn't a quote closing it,
+                    //ignore everything and just keep adding to token.
+                    if (c == '\"')
+                    {
+                        //Return to default state, reset token and push to list.
+                        lexerState = LexerState.DEFAULT;
+                        addToList(Type._string, token.Substring(0, token.Length - 1));
+                        token = "";
+                    }
+                } else if (lexerState == LexerState.IN_COMMENT)
+                {
+                    //In a comment, ignore unless token is an end comment.
+                    if (token.Length>=2 && token.Substring(token.Length-2)=="//")
+                    {
+                        //End of comment, return lexer back to normal state and reset token.
+                        lexerState = LexerState.DEFAULT;
+                        token = "";
+                    }
                 }
             }
         }
