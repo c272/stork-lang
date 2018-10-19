@@ -1,5 +1,6 @@
 # Stork
 ![deps](https://img.shields.io/badge/dependencies-none-green.svg)      ![license](https://img.shields.io/badge/license-MIT-blue.svg) ![version](https://img.shields.io/badge/version-v0.04-orange.svg) ![support](https://img.shields.io/badge/platform-c%23.net%20%3E%3D%207-lightgrey.svg)
+
 *A programming language which aims to make mundane tasks less mundane.*
 ## Introduction
 Stork is a C-like programming language that aims to make the tasks that would be considered "boilerplate code" easier, by stripping the required work down, and by exporting the tasks into a vast standard library.
