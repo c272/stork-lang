@@ -213,8 +213,12 @@ namespace stork
                         if (c == ' ')
                         {
                             //Yes, we're at the end of a keyword and it's unrecognised.
-                            //Assume it's a variable/function identifier, and push.
-                            addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            //Check for a literal, if it isn't one then push an unknown.
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
+                            if (!foundLiteral)
+                            {
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            }
                             token = "";
                         } else if (c == '(')
                         {
@@ -308,7 +312,7 @@ namespace stork
                             //Detected a binary AND symbol. Pushing and resetting.
                             //Checking for literal.
                             bool foundLiteral = findLiteral(token.Substring(0, token.Length - 2));
-                            if (!foundLiteral)
+                            if (!foundLiteral && token.Length>2)
                             {
                                 //No literal found, assuming unknown identifier and adding to list.
                                 addToList(Type.unknown_identifier, token.Substring(0, token.Length - 2));
@@ -322,7 +326,7 @@ namespace stork
                             //Detected a binary AND symbol. Pushing and resetting.
                             //Checking for literal.
                             bool foundLiteral = findLiteral(token.Substring(0, token.Length - 2));
-                            if (!foundLiteral)
+                            if (!foundLiteral && token.Length>2)
                             {
                                 //No literal found, assuming unknown identifier and adding to list.
                                 addToList(Type.unknown_identifier, token.Substring(0, token.Length - 2));
