@@ -23,13 +23,18 @@ namespace stork
         if_statement,
         elseif_statement,
         while_statement,
+        for_statement,
         float_literal,
         int_literal,
         boolean_literal,
         equals,
         accessor_symbol,
         binary_and,
-        binary_or
+        binary_or,
+        less_than,
+        more_than,
+        addition_operator,
+        minus_operator
     }
 
     //"Lexer state" enumeration.
@@ -164,6 +169,21 @@ namespace stork
                         addToList(Type.if_statement);
                         token = "";
                         break;
+                    case "else if ":
+                        //Elif detected.
+                        addToList(Type.elseif_statement);
+                        token = "";
+                        break;
+                    case "while ":
+                        //While loop detected.
+                        addToList(Type.while_statement);
+                        token = "";
+                        break;
+                    case "for ":
+                        //For loop detected.
+                        addToList(Type.for_statement);
+                        token = "";
+                        break;
                     case "int ":
                     case "float ":
                     case "bool ":
@@ -213,6 +233,10 @@ namespace stork
                                     break;
                                 case "while":
                                     addToList(Type.while_statement);
+                                    foundI = true;
+                                    break;
+                                case "for":
+                                    addToList(Type.for_statement);
                                     foundI = true;
                                     break;
                             }
@@ -275,6 +299,7 @@ namespace stork
                             //Checking if after a number. If it is, don't put in an accessor.
                             if (!findLiteral(token.Substring(0, token.Length - 1), true))
                             {
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
                                 addToList(Type.accessor_symbol);
                                 token = "";
                             }
@@ -282,7 +307,6 @@ namespace stork
                         {
                             //Detected a binary AND symbol. Pushing and resetting.
                             //Checking for literal.
-                            Console.WriteLine("BNAND: " + token.Substring(0, token.Length - 2));
                             bool foundLiteral = findLiteral(token.Substring(0, token.Length - 2));
                             if (!foundLiteral)
                             {
@@ -291,6 +315,73 @@ namespace stork
                             }
 
                             addToList(Type.binary_and);
+                            token = "";
+                        }
+                        else if (token.Length >= 2 && token.Substring(token.Length - 2) == "||")
+                        {
+                            //Detected a binary AND symbol. Pushing and resetting.
+                            //Checking for literal.
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 2));
+                            if (!foundLiteral)
+                            {
+                                //No literal found, assuming unknown identifier and adding to list.
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 2));
+                            }
+
+                            addToList(Type.binary_or);
+                            token = "";
+                        }
+                        else if (c=='<')
+                        {
+                            //Checking for literal.
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
+                            if (!foundLiteral)
+                            {
+                                //Assuming unknown identifier and pushing.
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            }
+                            addToList(Type.less_than);
+                            token = "";
+                        }
+                        else if (c == '>')
+                        {
+                            //Checking for literal.
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
+                            if (!foundLiteral)
+                            {
+                                //Assuming unknown identifier and pushing.
+                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                            }
+                            addToList(Type.more_than);
+                            token = "";
+                        } else if (c=='+')
+                        {
+                            //Detected a plus. Looking for literal.
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
+                            if (!foundLiteral)
+                            {
+                                //Assuming unknown, pushing.
+                                if (token.Substring(0, token.Length - 1).Length > 0)
+                                {
+                                    addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                                }
+                            }
+                            addToList(Type.addition_operator);
+                            token = "";
+                        }
+                        else if (c == '-')
+                        {
+                            //Detected a plus. Looking for literal.
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
+                            if (!foundLiteral)
+                            {
+                                //Assuming unknown, pushing.
+                                if (token.Substring(0, token.Length - 1).Length > 0)
+                                {
+                                    addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                                }
+                            }
+                            addToList(Type.minus_operator);
                             token = "";
                         }
 
