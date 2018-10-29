@@ -14,7 +14,7 @@ namespace stork
             //Checking that the command line arguments are given.
             if (args.Length<1)
             {
-                Console.WriteLine("STKI E001: No command line arguments given, use --help for more information.");
+                StorkError.printError(StorkError.Error.invalid_args);
                 return;
             }
 
@@ -30,7 +30,7 @@ namespace stork
             string file = "";
             if(!StorkIO.loadFile(args[0], ref file))
             {
-                Console.WriteLine("STKI E002: Invalid file path given, or error reading the file.");
+                StorkError.printError(StorkError.Error.invalid_file);
                 return;
             }
 
@@ -50,6 +50,9 @@ namespace stork
             {
                 Console.WriteLine(lexer.lexerList[i].type+" -> \""+lexer.lexerList[i].item+"\"");
             }
+
+            //Lexing is finished, now transfer onto the LexerScript -> ActionTreeScript conversion.
+            StorkActionTree stkact = new StorkActionTree(lexer.lexerList);
         }
     }
 }

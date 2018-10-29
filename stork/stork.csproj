@@ -37,6 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="StorkActionTree.cs" />
+    <Compile Include="StorkError.cs" />
     <Compile Include="StorkIO.cs" />
     <Compile Include="StorkLexer.cs" />
   </ItemGroup>

@@ -69,7 +69,7 @@ namespace stork
         }
 
         //Search for a literal in the string given.
-        public bool findLiteral(string token, bool noListAdds = false)
+        public static bool findLiteral(string token, bool noListAdds = false)
         {
             //Trimming spaces from the token. If it's a literal, it won't have spaces.
             token = token.Replace(" ", "");
