@@ -20,7 +20,7 @@ namespace stork
             lexerList = list;
 
             //Running the converter automatically, unless otherwise specified.
-            if (!auto) { convertList(); }
+            if (auto) { convertList(); }
         }
 
         //An action, for the interpreter to carry out.
@@ -29,7 +29,8 @@ namespace stork
             noaction,
             check_if,
             check_if_end,
-            number_literal
+            number_literal,
+            variable
         }
 
         public class ActionItem
@@ -76,6 +77,32 @@ namespace stork
             }
         }
 
+        public bool findLiteral(string token)
+        {
+            //Trimming spaces from the token. If it's a literal, it won't have spaces.
+            token = token.Replace(" ", "");
+
+            //Reached the end of a line, checking for literals.
+            bool foundLiteral = false;
+            try
+            {
+                float.Parse(token.Substring(0, token.Length));
+                foundLiteral = true;
+            }
+            catch (Exception)
+            {
+                //Not a float, try integer.
+                try
+                {
+                    int.Parse(token.Substring(0, token.Length));
+                    foundLiteral = true;
+                }
+                catch (Exception) { }
+            }
+
+            return foundLiteral;
+        }
+
         //convertList function, makes the lexer list into an action tree.
         public void convertList()
         {
@@ -109,6 +136,7 @@ namespace stork
                     case Type.for_statement:
                         break;
                     case Type.if_statement:
+                        Console.WriteLine("Found IF STATEMENT");
                         //Checking if next element is of type "statement_open".
                         if(!checkNext(i, Type.statement_open))
                         {
@@ -139,6 +167,7 @@ namespace stork
                             }
                         }
 
+                        Console.WriteLine("got to thingy");
                         //Found the end of the block. See if the statement can be evaluated.
                         for (int j=i; j<pos; j++)
                         {
@@ -149,14 +178,20 @@ namespace stork
                                 if (lexerList[j].type==Type.unknown_identifier)
                                 {
                                     //Attempt to cast to literal.
-                                    if(StorkLexer.findLiteral(lexerList[j].item, true))
+                                    if(findLiteral(lexerList[j].item))
                                     {
                                         //Is literal, add to actionlist as literal.
                                         addItem(Action.number_literal, lexerList[j].item);
                                     } else
                                     {
                                         //No literal, check if a variable has previously been created under that name.
-                                        checkVariableExists(lexerList[j].item);
+                                        if(!checkVariableExists(lexerList[j].item))
+                                        {
+                                            StorkError.printError(StorkError.Error.syntax_error_identifier);
+                                        } else
+                                        {
+                                            addItem(Action.variable, lexerList[j].item);
+                                        }
                                     }
                                 }
                             } else
@@ -166,6 +201,11 @@ namespace stork
                                 break;
                             }
                         }
+
+                        //Ending if.
+                        addItem(Action.check_if_end);
+                        //Skipping to after pos.
+                        i = pos + 1;
 
                         break;
                     case Type.int_literal:
