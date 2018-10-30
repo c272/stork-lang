@@ -20,7 +20,7 @@ namespace stork
             lexerList = list;
 
             //Running the converter automatically, unless otherwise specified.
-            if (!auto) { convertList(); }
+            if (auto) { convertList(); }
         }
 
         //An action, for the interpreter to carry out.
