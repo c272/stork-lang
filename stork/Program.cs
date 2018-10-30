@@ -60,7 +60,7 @@ namespace stork
             StorkActionTree stkact = new StorkActionTree(lexer.lexerList);
             
             //Printing.
-            Console.WriteLine("\n\nACTION TREE:");
+            Console.WriteLine("\nACTION TREE:");
             Console.WriteLine("Action Length: "+stkact.actionTree.Count+"\n");
             for (int i=0; i<stkact.actionTree.Count; i++)
             {
