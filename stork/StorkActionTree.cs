@@ -32,6 +32,8 @@ namespace stork
             number_literal
         }
 
+        //The "ActionItem" class, which is the base template the ActionTree contains.
+        //Holds an Action (type of action) and Item (contents of action/details about action).
         public class ActionItem
         {
             //Basic constructor. Item contents are not required, so are an optional parameter.
@@ -58,13 +60,13 @@ namespace stork
             }
         }
 
-        //Adds item to actionTree.
+        //addItem, adds item to the actionTree.
         public void addItem(Action act, string cont="")
         {
             actionTree.Add(new ActionItem(act, cont));
         }
 
-        //Checks if a variable exists.
+        //Checks if a variable exists in the Stork scope.
         public bool checkVariableExists(string name)
         {
             if (variableList.Contains(name))
@@ -76,6 +78,33 @@ namespace stork
             }
         }
 
+        //findLiteral, finds a literal in the given string.
+        public bool findLiteral(string token)
+        {
+            //Trimming spaces from the token. If it's a literal, it won't have spaces.
+            token = token.Replace(" ", "");
+
+            //Reached the end of a line, checking for literals.
+            bool foundLiteral = false;
+            try
+            {
+                float.Parse(token.Substring(0, token.Length));
+                foundLiteral = true;
+            }
+            catch (Exception)
+            {
+                //Not a float, try integer.
+                try
+                {
+                    int.Parse(token.Substring(0, token.Length));
+                    foundLiteral = true;
+                }
+                catch (Exception) { }
+            }
+
+            return foundLiteral;
+        }
+        
         //convertList function, makes the lexer list into an action tree.
         public void convertList()
         {
@@ -149,14 +178,20 @@ namespace stork
                                 if (lexerList[j].type==Type.unknown_identifier)
                                 {
                                     //Attempt to cast to literal.
-                                    if(StorkLexer.findLiteral(lexerList[j].item, true))
+                                    if(findLiteral(lexerList[j].item, true))
                                     {
                                         //Is literal, add to actionlist as literal.
                                         addItem(Action.number_literal, lexerList[j].item);
                                     } else
                                     {
                                         //No literal, check if a variable has previously been created under that name.
-                                        checkVariableExists(lexerList[j].item);
+                                        if(!checkVariableExists(lexerList[j].item))
+                                        {
+                                            StorkError.printError(StorkError.Error.syntax_error_identifier);
+                                        } else
+                                        {
+                                            addItem(Action.variable, lexerList[j].item);
+                                        }
                                     }
                                 }
                             } else
@@ -166,6 +201,11 @@ namespace stork
                                 break;
                             }
                         }
+                        
+                        //Ending if.
+                        addItem(Action.check_if_end);
+                        //Skipping to after pos.
+                        i = pos + 1;
 
                         break;
                     case Type.int_literal:
