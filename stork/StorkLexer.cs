@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -169,7 +169,7 @@ namespace stork
                         addToList(Type.if_statement);
                         token = "";
                         break;
-                    case "else if ":
+                    case "elif ":
                         //Elif detected.
                         addToList(Type.elseif_statement);
                         token = "";
@@ -231,7 +231,7 @@ namespace stork
                                     addToList(Type.if_statement);
                                     foundI = true;
                                     break;
-                                case "else if":
+                                case "elif":
                                     addToList(Type.elseif_statement);
                                     foundI = true;
                                     break;

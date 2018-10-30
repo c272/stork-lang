@@ -15,7 +15,8 @@ namespace stork
             expected_statement,
             expected_statement_close,
             invalid_statement,
-            syntax_error_identifier
+            syntax_error_identifier,
+            check_outside_comparison
         }
 
         public static void printError(Error err, StorkActionTree.ActionItem act=null)
@@ -39,6 +40,9 @@ namespace stork
                     break;
                 case Error.syntax_error_identifier:
                     Console.WriteLine("STKI FATAL E006: Syntax error, unknown identifier found.");
+                    break;
+                case Error.check_outside_comparison:
+                    Console.WriteLine("STKI FATAL E007: Check statement given, but outside a comparison.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");
