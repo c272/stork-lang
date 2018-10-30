@@ -53,7 +53,7 @@ namespace stork
 
             //Lexing is finished, now transfer onto the LexerScript -> ActionTreeScript conversion.
             StorkActionTree stkact = new StorkActionTree(lexer.lexerList);
-
+            
             //Printing.
             Console.WriteLine("\n\nACTION TREE:");
             Console.WriteLine("Action Length: "+stkact.actionTree.Count);
