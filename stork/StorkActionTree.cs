@@ -20,14 +20,20 @@ namespace stork
         Type[] evaluables = { Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
         //The array of all literal types.
         Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type.unknown_identifier};
+        //The array of all possible separators.
+        Type[] separators = { Type.parameter_separator, Type.accessor_symbol };
 
         //Constructor, takes in a lexerList.
         public StorkActionTree(List<LexerItem> list, bool auto = true)
         {
             lexerList = list;
 
+            // WARNING WARNING WARNING //
+            // ADDING EXAMPLE DEBUG FUNCTION, REMOVE THIS IF NOT DEBUGGING FUNCTIONS!
+            // WARNING WARNING WARNING //
+            functionDictionary.Add("examp", 0);
+
             //Running the converter automatically, unless otherwise specified.
-            functionDictionary.Add("example", 0);
             if (auto) { convertList(); }
         }
 
@@ -150,7 +156,7 @@ namespace stork
                         break;
                     case Type.binary_and:
                     case Type.binary_or:
-                        StorkError.printError(StorkError.Error.syntax_error_identifier);
+                        StorkError.printError(StorkError.Error.syntax_error_identifier, true, "||");
                         break;
                     case Type.block_close:
                         addItem(Action.block_close);
@@ -188,7 +194,7 @@ namespace stork
                         if(!checkNext(i, Type.statement_open))
                         {
                             //Is not, throw error.
-                            StorkError.printError(StorkError.Error.expected_statement);
+                            StorkError.printError(StorkError.Error.expected_statement, true, "No open bracket after an if statement is declared.");
                             break;
                         }
 
@@ -212,6 +218,16 @@ namespace stork
                     case Type.preprocess_identifier:
                         break;
                     case Type.statement_close:
+                        //Check if currently in function parameters.
+                        if (inFunctionParameters)
+                        {
+                            //Yes, so end the function parameter block.
+                            addItem(Action.run_function_param_end);
+                        } else
+                        {
+                            //No, just a normal end statement then.
+                            addItem(Action.statement_close);
+                        }
                         break;
                     case Type.statement_open:
                         break;
@@ -257,7 +273,7 @@ namespace stork
                                                 j++;
                                             } catch
                                             {
-                                                StorkError.printError(StorkError.Error.expected_statement_close);
+                                                StorkError.printError(StorkError.Error.expected_statement_close, true, "No function bracket close after function call.");
                                                 break;
                                             }
                                         }
@@ -266,10 +282,10 @@ namespace stork
                                         for (int k = i + 2; k < j; k++)
                                         {
                                             //Checking it's a literal or accessor symbol (.).
-                                            if (!literals.Contains(lexerList[k].type) && lexerList[k].type != Type.accessor_symbol)
+                                            if (!literals.Contains(lexerList[k].type) && !separators.Contains(lexerList[k].type))
                                             {
                                                 //It isn't, throw error.
-                                                StorkError.printError(StorkError.Error.invalid_argument_syntax);
+                                                StorkError.printError(StorkError.Error.invalid_argument_syntax,true, "Arguments weren't literals, variables, or function variables.");
                                             }
                                         }
 
@@ -280,7 +296,7 @@ namespace stork
                                 } else
                                 {
                                     //Not a function, send it to the error handler.
-                                    StorkError.printError(StorkError.Error.syntax_error_identifier);
+                                    StorkError.printError(StorkError.Error.syntax_error_identifier, true, "Unknown identifier \""+lexerList[i].item+"\".");
                                 }
                             }
                         }
@@ -315,7 +331,7 @@ namespace stork
                 catch
                 {
                     //No block close.
-                    StorkError.printError(StorkError.Error.expected_statement_close);
+                    StorkError.printError(StorkError.Error.expected_statement_close, true, "No end statement on a comparison (if, else, etc.).");
                     break;
                 }
             }
@@ -341,7 +357,7 @@ namespace stork
                             //No literal, check if a variable has previously been created under that name.
                             if (!checkVariableExists(lexerList[j].item))
                             {
-                                StorkError.printError(StorkError.Error.syntax_error_identifier);
+                                StorkError.printError(StorkError.Error.syntax_error_identifier, true, "Unknown identifier \""+lexerList[i].item+"\".");
                             }
                             else
                             {
@@ -378,7 +394,7 @@ namespace stork
                 else
                 {
                     //No, invalid identifier detected. Error.
-                    StorkError.printError(StorkError.Error.invalid_statement);
+                    StorkError.printError(StorkError.Error.invalid_statement,true, "Inevaluable type given (not a variable or a literal), so invalid.");
                     break;
                 }
             }

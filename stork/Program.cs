@@ -35,32 +35,40 @@ namespace stork
             }
 
             //Stripping string of all endline characters.
+            Console.WriteLine("Replacing endline characters...");
             file = Regex.Replace(file, @"\r\n?|\n", "");
-            Console.WriteLine(file);
+            Console.WriteLine("\nSTRIPPED FILE:\n"+file+"\n");
 
             //File is now loaded in, pass it to the lexer.
+            Console.WriteLine("Lexing document...");
             StorkLexer lexer = new stork.StorkLexer();
             foreach (char c in file)
             {
                 lexer.feed(c);
             }
-            
+
             //Output lexer contents.
+            Console.WriteLine("\nLEXER LIST:");
             for (int i=0; i<lexer.lexerList.Count; i++)
             {
                 Console.WriteLine(lexer.lexerList[i].type+" -> \""+lexer.lexerList[i].item+"\"");
             }
+            Console.WriteLine("");
 
             //Lexing is finished, now transfer onto the LexerScript -> ActionTreeScript conversion.
+            Console.WriteLine("Converting lexed document to ActionScript...");
             StorkActionTree stkact = new StorkActionTree(lexer.lexerList);
             
             //Printing.
             Console.WriteLine("\n\nACTION TREE:");
-            Console.WriteLine("Action Length: "+stkact.actionTree.Count);
+            Console.WriteLine("Action Length: "+stkact.actionTree.Count+"\n");
             for (int i=0; i<stkact.actionTree.Count; i++)
             {
                 Console.WriteLine(stkact.actionTree[i].act + " " + stkact.actionTree[i].item);
             }
+            Console.WriteLine("\n");
+
+            Console.WriteLine("Beginning ActionScript interpreting...");
         }
     }
 }

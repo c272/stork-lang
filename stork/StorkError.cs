@@ -20,7 +20,7 @@ namespace stork
             invalid_argument_syntax
         }
 
-        public static void printError(Error err, StorkActionTree.ActionItem act=null)
+        public static void printError(Error err, bool fatal = true, string act=null)
         {
             switch (err)
             {
@@ -55,7 +55,12 @@ namespace stork
 
             if (act!=null)
             {
-                Console.WriteLine("ERROR AT ACTION: " + act.act.ToString() + " , CONTENT " + act.item);
+                Console.WriteLine("ERROR AT: \""+act+"\".");
+            }
+
+            if (fatal)
+            {
+                Environment.Exit(-1);
             }
         }
     }
