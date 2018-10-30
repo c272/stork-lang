@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,8 @@ namespace stork
             invalid_file,
             expected_statement,
             expected_statement_close,
-            invalid_statement
+            invalid_statement,
+            syntax_error_identifier
         }
 
         public static void printError(Error err, StorkActionTree.ActionItem act=null)
@@ -22,7 +23,7 @@ namespace stork
             switch (err)
             {
                 case Error.invalid_args:
-                    Console.WriteLine("STKI FATAL E001: No command line arguments given, use--help for more information.");
+                    Console.WriteLine("STKI FATAL E001: No command line arguments given, use --help for more information.");
                     break;
                 case Error.invalid_file:
                     Console.WriteLine("STKI FATAL E002: Invalid file path given, or error reading the file.");
@@ -35,6 +36,9 @@ namespace stork
                     break;
                 case Error.invalid_statement:
                     Console.WriteLine("STKI FATAL E005: Statement in block cannot be evaluated, did you miss a bracket?");
+                    break;
+                case Error.syntax_error_identifier:
+                    Console.WriteLine("STKI FATAL E006: Syntax error, unknown identifier found.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");
