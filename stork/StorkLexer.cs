@@ -34,7 +34,8 @@ namespace stork
         less_than,
         more_than,
         addition_operator,
-        minus_operator
+        minus_operator,
+        parameter_separator
     }
 
     //"Lexer state" enumeration.
@@ -255,7 +256,7 @@ namespace stork
                         } else if (c == ')')
                         {
                             //Check literal.
-                            bool foundLiteral = findLiteral(token);
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length-1));
 
                             //Assume end of function call.
                             if (!foundLiteral)
@@ -386,6 +387,20 @@ namespace stork
                                 }
                             }
                             addToList(Type.minus_operator);
+                            token = "";
+                        } else if (c==',')
+                        {
+                            //Detected a parameter separator.
+                            bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
+                            if (!foundLiteral)
+                            {
+                                //Assuming unknown, pushing.
+                                if (token.Substring(0, token.Length-1).Length>0)
+                                {
+                                    addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
+                                }
+                            }
+                            addToList(Type.parameter_separator);
                             token = "";
                         }
 

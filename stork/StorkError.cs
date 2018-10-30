@@ -16,7 +16,8 @@ namespace stork
             expected_statement_close,
             invalid_statement,
             syntax_error_identifier,
-            check_outside_comparison
+            check_outside_comparison,
+            invalid_argument_syntax
         }
 
         public static void printError(Error err, StorkActionTree.ActionItem act=null)
@@ -43,6 +44,9 @@ namespace stork
                     break;
                 case Error.check_outside_comparison:
                     Console.WriteLine("STKI FATAL E007: Check statement given, but outside a comparison.");
+                    break;
+                case Error.invalid_argument_syntax:
+                    Console.WriteLine("STKI FATAL E008: Invalid func_argument syntax given, syntax error.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");

@@ -13,8 +13,13 @@ namespace stork
         public List<ActionItem> actionTree = new List<ActionItem>();
         public List<string> variableList = new List<string>();
         public List<string> variableValues = new List<string>();
+        public Dictionary<string, int> functionDictionary = new Dictionary<string, int>();
+        bool inFunctionParameters = false;
+
         //The array of all evaluable types.
         Type[] evaluables = { Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
+        //The array of all literal types.
+        Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type.unknown_identifier};
 
         //Constructor, takes in a lexerList.
         public StorkActionTree(List<LexerItem> list, bool auto = true)
@@ -22,6 +27,7 @@ namespace stork
             lexerList = list;
 
             //Running the converter automatically, unless otherwise specified.
+            functionDictionary.Add("example", 0);
             if (auto) { convertList(); }
         }
 
@@ -31,6 +37,7 @@ namespace stork
             noaction,
             check_if,
             check_if_end,
+            boolean_literal,
             number_literal,
             variable,
             check_equals,
@@ -45,7 +52,10 @@ namespace stork
             addition_operator,
             check_elseif,
             check_elseif_end,
-            set_equal
+            set_equal,
+            run_function_param,
+            run_function_param_end,
+            run_function_noparams
         }
 
         public class ActionItem
@@ -149,6 +159,7 @@ namespace stork
                         addItem(Action.block_open);
                         break;
                     case Type.boolean_literal:
+                        addItem(Action.boolean_literal);
                         break;
                     case Type.elseif_statement:
                         //Carry out the same process as the if statement, but with different headers.
@@ -170,8 +181,6 @@ namespace stork
                             addItem(Action.set_equal);
                         }
                         break;
-                    case Type.float_literal:
-                        break;
                     case Type.for_statement:
                         break;
                     case Type.if_statement:
@@ -187,9 +196,10 @@ namespace stork
                         addItem(Action.check_if);
                         genericIfChecker(ref i);
                         addItem(Action.check_if_end);
-
                         break;
                     case Type.int_literal:
+                    case Type.float_literal:
+                        addItem(Action.number_literal, lexerList[i].item);
                         break;
                     case Type.less_than:
                         break;
@@ -206,6 +216,74 @@ namespace stork
                     case Type.statement_open:
                         break;
                     case Type.unknown_identifier:
+                        //Checking if the identifier can be converted to a number literal.
+                        if (findLiteral(lexerList[i].item))
+                        {
+                            //It can, push to list as literal.
+                            addItem(Action.number_literal, lexerList[i].item);
+                        } else
+                        {
+                            //No, see if it's a variable.
+                            if (variableList.Contains(lexerList[i].item))
+                            {
+                                //Yes, push to list.
+                                addItem(Action.variable, lexerList[i].item);
+                            } else
+                            {
+                                //No, finally see if it's a function or not before calling error.
+                                if (functionDictionary.ContainsKey(lexerList[i].item))
+                                {
+                                    //Is a function, check if it's being called or not.
+                                    if (lexerList[i+1].type==Type.statement_open && lexerList[i+2].type==Type.statement_close)
+                                    {
+                                        //A function call with no parameters, so can immediately push.
+                                        addItem(Action.run_function_noparams, lexerList[i].item);
+                                        //Increase "i" to the position of the end bracket.
+                                        i += 2;
+                                    } else if (lexerList[i+1].type==Type.statement_open)
+                                    {
+                                        //A function call with 1 or more parameters.
+                                        //Check where the end of the statement is.
+                                        int j = i + 2;
+                                        while (true)
+                                        {
+                                            try
+                                            {
+                                                if (lexerList[j].type == Type.statement_close)
+                                                {
+                                                    //End is here.
+                                                    break;
+                                                }
+                                                j++;
+                                            } catch
+                                            {
+                                                StorkError.printError(StorkError.Error.expected_statement_close);
+                                                break;
+                                            }
+                                        }
+
+                                        //Found the end, now look for how many parameters there are, and if they're valid.
+                                        for (int k = i + 2; k < j; k++)
+                                        {
+                                            //Checking it's a literal or accessor symbol (.).
+                                            if (!literals.Contains(lexerList[k].type) && lexerList[k].type != Type.accessor_symbol)
+                                            {
+                                                //It isn't, throw error.
+                                                StorkError.printError(StorkError.Error.invalid_argument_syntax);
+                                            }
+                                        }
+
+                                        //Adding function open statement.
+                                        addItem(Action.run_function_param);
+                                        inFunctionParameters = true;
+                                    }
+                                } else
+                                {
+                                    //Not a function, send it to the error handler.
+                                    StorkError.printError(StorkError.Error.syntax_error_identifier);
+                                }
+                            }
+                        }
                         break;
                     case Type.variable_identifier:
                         break;
