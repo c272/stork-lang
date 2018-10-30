@@ -31,7 +31,7 @@ namespace stork
             // WARNING WARNING WARNING //
             // ADDING EXAMPLE DEBUG FUNCTION, REMOVE THIS IF NOT DEBUGGING FUNCTIONS!
             // WARNING WARNING WARNING //
-            functionDictionary.Add("examp", 0);
+            functionDictionary.Add("example", 0);
 
             //Running the converter automatically, unless otherwise specified.
             if (auto) { convertList(); }
