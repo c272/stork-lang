@@ -18,7 +18,9 @@ namespace stork
             syntax_error_identifier,
             check_outside_comparison,
             invalid_argument_syntax,
-            invalid_variable_name
+            invalid_variable_name,
+            cannot_assign_variable_value,
+            invalid_function_name
         }
 
         public static void printError(Error err, bool fatal = true, string act=null)
@@ -51,6 +53,12 @@ namespace stork
                     break;
                 case Error.invalid_variable_name:
                     Console.WriteLine("STKI FATAL E009: Variable identifier given, but the name is invalid or nonexistant.");
+                    break;
+                case Error.cannot_assign_variable_value:
+                    Console.WriteLine("STKI FATAL E010: Invalid syntax or variable value, cannot set variable to value:");
+                    break;
+                case Error.invalid_function_name:
+                    Console.WriteLine("STKI FATAL E011: Function identifier given, but the name is invalid or nonexistant.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");
