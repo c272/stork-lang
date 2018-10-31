@@ -11,17 +11,18 @@ namespace stork
         //Private property definitions here.
         public List<LexerItem> lexerList = new List<LexerItem>();
         public List<ActionItem> actionTree = new List<ActionItem>();
-        public List<string> variableList = new List<string>();
-        public List<string> variableValues = new List<string>();
+        public Dictionary<string, int> variableDictionary = new Dictionary<string, int>();
         public Dictionary<string, int> functionDictionary = new Dictionary<string, int>();
         bool inFunctionParameters = false;
 
         //The array of all evaluable types.
         Type[] evaluables = { Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
         //The array of all literal types.
-        Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type.unknown_identifier};
+        Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type.unknown_identifier };
         //The array of all possible separators.
         Type[] separators = { Type.parameter_separator, Type.accessor_symbol };
+        //Array of all data types.
+        Type[] data_types = { Type.variable_identifier };
 
         //Constructor, takes in a lexerList.
         public StorkActionTree(List<LexerItem> list, bool auto = true)
@@ -46,6 +47,10 @@ namespace stork
             boolean_literal,
             number_literal,
             variable,
+            create_variable,
+            create_variable_type,
+            create_variable_value,
+            create_variable_end,
             check_equals,
             statement_open,
             statement_close,
@@ -99,7 +104,7 @@ namespace stork
         //Checks if a variable exists.
         public bool checkVariableExists(string name)
         {
-            if (variableList.Contains(name))
+            if (variableDictionary.ContainsKey(name))
             {
                 return true;
             } else
@@ -240,7 +245,7 @@ namespace stork
                         } else
                         {
                             //No, see if it's a variable.
-                            if (variableList.Contains(lexerList[i].item))
+                            if (variableDictionary.ContainsKey(lexerList[i].item))
                             {
                                 //Yes, push to list.
                                 addItem(Action.variable, lexerList[i].item);
@@ -302,6 +307,32 @@ namespace stork
                         }
                         break;
                     case Type.variable_identifier:
+                        //Found a variable identifier, check if the next token is an unknown.
+                        if (checkNext(i, Type.unknown_identifier))
+                        {
+                            //Yes, this is a single variable instantiation, no array of any sort, so push to variable list and add as an instruction.
+                            addItem(Action.create_variable, lexerList[i+1].item);
+                            addItem(Action.create_variable_type, lexerList[i].item);
+                            
+                            //Checking if value is set after instantiation.
+                            if (lexerList[i+2].type==Type.equals)
+                            {
+                                //Assuming that it is being set to a value.
+                                //Checking if the value is a literal or a variable.
+                                if (literals.Contains(lexerList[i+3].type) || variableDictionary.ContainsKey(lexerList[i+3].item))
+                                {
+
+                                }
+                            } else
+                            {
+                                //End creation, is null value.
+                                addItem(Action.create_variable_end);
+                            }
+                        } else
+                        {
+                            //Error, invalid syntax for variable creation.
+                            StorkError.printError(StorkError.Error.invalid_variable_name);
+                        }
                         break;
                     case Type.while_statement:
                         break;
