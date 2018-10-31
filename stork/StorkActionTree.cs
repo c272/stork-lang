@@ -25,11 +25,20 @@ namespace stork
     {
         public Function(Dictionary<string,StorkActionTree.Action> parameters_, bool public__=true, int location_=-1)
         {
-
+            parameters = parameters_;
+            public_ = public__;
+            location = location_;
         }
         public Dictionary<string, StorkActionTree.Action> parameters = new Dictionary<string, StorkActionTree.Action>();
         public bool public_;
         int location;
+    }
+
+    enum ATState
+    {
+        DEFAULT,
+        IN_FUNC_PARAMS,
+        IN_FUNC
     }
 
     class StorkActionTree
@@ -38,8 +47,9 @@ namespace stork
         public List<LexerItem> lexerList = new List<LexerItem>();
         public List<ActionItem> actionTree = new List<ActionItem>();
         public Dictionary<string, Variable> variableDictionary = new Dictionary<string, Variable>();
-        public Dictionary<string, int> functionDictionary = new Dictionary<string, int>();
-        bool inFunctionParameters = false;
+        public Dictionary<string, Function> functionDictionary = new Dictionary<string, Function>();
+        ATState actionTreeState = ATState.DEFAULT;
+        public int blockLayer = 0;
 
         //The array of all evaluable types.
         Type[] evaluables = { Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
@@ -58,10 +68,25 @@ namespace stork
             // WARNING WARNING WARNING //
             // ADDING EXAMPLE DEBUG FUNCTION, REMOVE THIS IF NOT DEBUGGING FUNCTIONS!
             // WARNING WARNING WARNING //
-            functionDictionary.Add("example", 0);
+            addFunc("example");
 
             //Running the converter automatically, unless otherwise specified.
             if (auto) { convertList(); }
+        }
+
+        //Adds a function to the function dictionary.
+        public void addFunc(string name, Dictionary<string, Action> param=null, bool public_=true, int location=-1)
+        {
+            if (param == null)
+            {
+                functionDictionary.Add(name, new Function(null));
+            } else if (location!=-1)
+            {
+                functionDictionary.Add(name, new Function(param, public_, location));
+            } else 
+            {
+                functionDictionary.Add(name, new Function(param));
+            }
         }
 
         //An action, for the interpreter to carry out.
@@ -72,6 +97,9 @@ namespace stork
             check_if_end,
             boolean_literal,
             number_literal,
+            func_literal,
+            string_literal,
+            gen_literal,
             variable,
             create_variable,
             create_variable_type,
@@ -92,7 +120,14 @@ namespace stork
             set_equal,
             run_function_param,
             run_function_param_end,
-            run_function_noparams
+            run_function_noparams,
+            create_function,
+            function_create,
+            function_create_position,
+            function_create_unknown_position,
+            function_create_end,
+            function_end,
+            function_start
         }
 
         public class ActionItem
@@ -190,10 +225,40 @@ namespace stork
                         StorkError.printError(StorkError.Error.syntax_error_identifier, true, "||");
                         break;
                     case Type.block_close:
-                        addItem(Action.block_close);
+                        //Check if currently in a function.
+                        if (actionTreeState == ATState.IN_FUNC)
+                        {
+                            //Yes, is this the outermost block layer?
+                            if (blockLayer == 0)
+                            {
+                                //End func.
+                                addItem(Action.function_end);
+                                //Resetting state to default.
+                                actionTreeState = ATState.DEFAULT;
+                            } else
+                            {
+                                //Not at zero yet, take away block layer.
+                                blockLayer--;
+                                addItem(Action.block_close);
+                            }
+                        } else
+                        {
+                            //No, just add a block_close.
+                            addItem(Action.block_close);
+                        }
                         break;
                     case Type.block_open:
-                        addItem(Action.block_open);
+                        //Checking if in a func.
+                        if (actionTreeState == ATState.IN_FUNC)
+                        {
+                            //Yes, add to block layer.
+                            blockLayer++;
+                            addItem(Action.block_open);
+                        }
+                        else
+                        {
+                            addItem(Action.block_open);
+                        }
                         break;
                     case Type.boolean_literal:
                         addItem(Action.boolean_literal);
@@ -250,7 +315,7 @@ namespace stork
                         break;
                     case Type.statement_close:
                         //Check if currently in function parameters.
-                        if (inFunctionParameters)
+                        if (actionTreeState == ATState.IN_FUNC_PARAMS)
                         {
                             //Yes, so end the function parameter block.
                             addItem(Action.run_function_param_end);
@@ -287,7 +352,7 @@ namespace stork
                                         addItem(Action.run_function_noparams, lexerList[i].item);
                                         //Increase "i" to the position of the end bracket.
                                         i += 2;
-                                    } else if (lexerList[i+1].type==Type.statement_open)
+                                    } else if (lexerList[i+1].type==Type.statement_open && lexerList[i-1].type!=Type.function_identifier)
                                     {
                                         //A function call with 1 or more parameters.
                                         //Check where the end of the statement is.
@@ -322,7 +387,7 @@ namespace stork
 
                                         //Adding function open statement.
                                         addItem(Action.run_function_param);
-                                        inFunctionParameters = true;
+                                        actionTreeState = ATState.IN_FUNC_PARAMS;
                                     }
                                 } else
                                 {
@@ -384,9 +449,124 @@ namespace stork
                         } else
                         {
                             //Found the name of the function, now check for statement_open.
+                            addItem(Action.function_create, lexerList[i+1].item);
                             if (lexerList[i+2].type==Type.statement_open)
                             {
                                 //Found, no errors yet.
+                                //Iterate through for parameters.
+                                int pos = i + 3;
+                                Dictionary<string, StorkActionTree.Action> parameters = new Dictionary<string, Action>();
+                                bool isNextParam = true;
+                                while (true)
+                                {
+                                    try
+                                    {
+                                        //Checking if literal or variable.
+                                        if (lexerList[pos].type == Type.variable_identifier)
+                                        {
+                                            //Found an identifier, check for the name in next position.
+                                            if (lexerList[pos + 1].type == Type.unknown_identifier)
+                                            {
+                                                //Checking if parameter is expected.
+                                                if (!isNextParam)
+                                                {
+                                                    //Error, no parameter separator given.
+                                                    StorkError.printError(StorkError.Error.function_missing_parameter_separator);
+                                                }
+
+                                                //Name found. Add to parameter list.
+                                                Action act = 0;
+                                                switch (lexerList[pos].item)
+                                                {
+                                                    case "int":
+                                                    case "float":
+                                                        act = Action.number_literal;
+                                                        break;
+                                                    case "bool":
+                                                        act = Action.boolean_literal;
+                                                        break;
+                                                    case "gen":
+                                                        act = Action.gen_literal;
+                                                        break;
+                                                    case "func":
+                                                        act = Action.func_literal;
+                                                        break;
+                                                    default:
+                                                        StorkError.printError(StorkError.Error.invalid_parameter_type);
+                                                        break;
+                                                }
+                                                parameters.Add(lexerList[pos + 1].item, act);
+
+                                                //Checking if the next identifier is a separator.
+                                                if (lexerList[pos+2].type==Type.parameter_separator)
+                                                {
+                                                    isNextParam = true;
+                                                } else
+                                                {
+                                                    isNextParam = false;
+                                                }
+                                            } 
+                                            else
+                                            {
+                                                //Invalid variable declaration.
+                                                StorkError.printError(StorkError.Error.invalid_variable_name, true, lexerList[pos + 1].item);
+                                            }
+                                        }
+                                        //Checking if parameter was asked for but not given.
+                                        else if (parameters.Count > 0 && isNextParam)
+                                        {
+                                            //Parameter required but not detected.
+                                            StorkError.printError(StorkError.Error.function_missing_parameter);
+                                        }
+
+                                        //Checking if the position is end of statement.
+                                        if (lexerList[pos].type == Type.statement_close)
+                                        {
+                                            //End of parameter block, break and add all params to a function in the dictionary.
+                                            break;
+                                        }
+                                        pos++;
+                                    } catch
+                                    {
+                                        //Gone out of range with the array, bracket was never closed.
+                                        StorkError.printError(StorkError.Error.expected_statement_close);
+                                    }
+                                }
+
+                                //Finished the parameter loop, check if there is any definition after the break.
+                                try
+                                {
+                                    if (checkNext(pos, Type.block_open))
+                                    {
+                                        //Is defined, add position and push to dictionary.
+                                        addFunc(lexerList[i + 1].item, parameters, true, pos + 1);
+                                        addItem(Action.function_create_position, (actionTree.Count + 2).ToString());
+                                    } else
+                                    {
+                                        //Not defined, check if the character is an endline character.
+                                        if (checkNext(pos, Type.endline))
+                                        {
+                                            //Yes, push as function proto with location as -1.
+                                            addFunc(lexerList[i + 1].item, parameters, true);
+                                            addItem(Action.function_create_unknown_position);
+                                        } else
+                                        {
+                                            //Error, invalid function definition.
+                                            StorkError.printError(StorkError.Error.function_proto_nodefine);
+                                        }
+                                    }
+                                    addItem(Action.function_create_end);
+                                    addItem(Action.function_start);
+
+                                    //Skipping to the block opening of the func, and setting state to "IN_FUNC".
+                                    actionTreeState = ATState.IN_FUNC;
+                                    Console.WriteLine(functionDictionary);
+                                    i = pos+1;
+                                } catch
+                                {
+                                    //Throw error, line is not ended and no definition.
+                                    StorkError.printError(StorkError.Error.function_proto_nodefine);
+                                }
                             } else
                             {
                                 //Invalid syntax, throw error, all funcs need a parameter list.
