@@ -35,7 +35,8 @@ namespace stork
         more_than,
         addition_operator,
         minus_operator,
-        parameter_separator
+        parameter_separator,
+        function_identifier
     }
 
     //"Lexer state" enumeration.
@@ -191,6 +192,10 @@ namespace stork
                     case "gen ":
                         //Variable keyword detected. Add to list.
                         addToList(Type.variable_identifier, token.Substring(0, token.Length - 1));
+                        token = "";
+                        break;
+                    case "proc ":
+                        addToList(Type.function_identifier);
                         token = "";
                         break;
                     case "true":
