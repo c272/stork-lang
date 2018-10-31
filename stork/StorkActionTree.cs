@@ -6,12 +6,38 @@ using System.Threading.Tasks;
 
 namespace stork
 {
+    //The variable class. Contains a type property, an access property, and a contents property.
+    class Variable
+    {
+        public Variable(string type_, string contents_, bool public__)
+        {
+            type = type_;
+            contents = contents_;
+            public_ = public__;
+        }
+        public string type;
+        public string contents;
+        public bool public_;
+    }
+
+    //The function class. Contains a function location in the ActionScript, an access property and a parameters property.
+    class Function
+    {
+        public Function(Dictionary<string,StorkActionTree.Action> parameters_, bool public__=true, int location_=-1)
+        {
+
+        }
+        public Dictionary<string, StorkActionTree.Action> parameters = new Dictionary<string, StorkActionTree.Action>();
+        public bool public_;
+        int location;
+    }
+
     class StorkActionTree
     {
         //Private property definitions here.
         public List<LexerItem> lexerList = new List<LexerItem>();
         public List<ActionItem> actionTree = new List<ActionItem>();
-        public Dictionary<string, int> variableDictionary = new Dictionary<string, int>();
+        public Dictionary<string, Variable> variableDictionary = new Dictionary<string, Variable>();
         public Dictionary<string, int> functionDictionary = new Dictionary<string, int>();
         bool inFunctionParameters = false;
 
@@ -301,6 +327,7 @@ namespace stork
                                 } else
                                 {
                                     //Not a function, send it to the error handler.
+                                    Console.WriteLine("BREAK AT: "+lexerList[i].type + " " + lexerList[i].item);
                                     StorkError.printError(StorkError.Error.syntax_error_identifier, true, "Unknown identifier \""+lexerList[i].item+"\".");
                                 }
                             }
@@ -313,6 +340,8 @@ namespace stork
                             //Yes, this is a single variable instantiation, no array of any sort, so push to variable list and add as an instruction.
                             addItem(Action.create_variable, lexerList[i+1].item);
                             addItem(Action.create_variable_type, lexerList[i].item);
+                            //Adding to variable dictionary.
+                            addVariable(lexerList[i+1].item, lexerList[i].item, null, true);
                             
                             //Checking if value is set after instantiation.
                             if (lexerList[i+2].type==Type.equals)
@@ -321,17 +350,48 @@ namespace stork
                                 //Checking if the value is a literal or a variable.
                                 if (literals.Contains(lexerList[i+3].type) || variableDictionary.ContainsKey(lexerList[i+3].item))
                                 {
-
+                                    //Is a literal/var, add as a "set_value".
+                                    addItem(Action.create_variable_value, lexerList[i + 3].item);
+                                    //End creation.
+                                    addItem(Action.create_variable_end);
+                                    i += 3;
+                                    break;
+                                }
+                                else
+                                {
+                                    //Invalid variable assignment.
+                                    StorkError.printError(StorkError.Error.cannot_assign_variable_value, true, lexerList[i+3].item);
                                 }
                             } else
                             {
                                 //End creation, is null value.
                                 addItem(Action.create_variable_end);
+                                i++;
+                                break;
                             }
                         } else
                         {
                             //Error, invalid syntax for variable creation.
                             StorkError.printError(StorkError.Error.invalid_variable_name);
+                        }
+                        break;
+                    case Type.function_identifier:
+                        //Detected a proc identifier, track through to find parameters (if there are any).
+                        if (lexerList[i+1].type!=Type.unknown_identifier)
+                        {
+                            //Error, invalid function definition.
+                            StorkError.printError(StorkError.Error.invalid_function_name);
+                        } else
+                        {
+                            //Found the name of the function, now check for statement_open.
+                            if (lexerList[i+2].type==Type.statement_open)
+                            {
+                                //Found, no errors yet.
+                            } else
+                            {
+                                //Invalid syntax, throw error, all funcs need a parameter list.
+                                StorkError.printError(StorkError.Error.expected_statement);
+                            }
                         }
                         break;
                     case Type.while_statement:
@@ -343,6 +403,12 @@ namespace stork
                     
                 }
             }
+        }
+
+        //Adds a variable to the variable dictionary according to parameters.
+        public void addVariable(string name, string type, string contents, bool public_=true)
+        {
+            variableDictionary.Add(name, new Variable(type, contents, public_));
         }
 
         private void genericIfChecker(ref int i)
@@ -370,7 +436,6 @@ namespace stork
             //Found the end of the block. See if the statement can be evaluated.
             for (int j = i + 1; j < pos; j++)
             {
-                Console.WriteLine(lexerList[j].type);
                 if (evaluables.Contains(lexerList[j].type))
                 {
                     //Yes, valid.
