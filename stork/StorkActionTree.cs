@@ -637,7 +637,7 @@ namespace stork
                             //No literal, check if a variable has previously been created under that name.
                             if (!checkVariableExists(lexerList[j].item))
                             {
-                                StorkError.printError(StorkError.Error.syntax_error_identifier, true, "Unknown identifier \""+lexerList[i].item+"\".");
+                                StorkError.printError(StorkError.Error.syntax_error_identifier, true, "Unknown identifier \""+lexerList[j].item+"\".");
                             }
                             else
                             {

@@ -288,7 +288,7 @@ namespace stork
                         //Checking if character is an end of line.
                         else if (c == ';')
                         {
-                            bool foundLiteral = findLiteral(token);
+                            bool foundLiteral = findLiteral(token.Substring(0,token.Length-1));
 
                             //Checking if literal has been found.
                             if (!foundLiteral)
