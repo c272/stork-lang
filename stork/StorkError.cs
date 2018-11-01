@@ -20,7 +20,11 @@ namespace stork
             invalid_argument_syntax,
             invalid_variable_name,
             cannot_assign_variable_value,
-            invalid_function_name
+            invalid_function_name,
+            invalid_parameter_type,
+            function_proto_nodefine,
+            function_missing_parameter_separator,
+            function_missing_parameter
         }
 
         public static void printError(Error err, bool fatal = true, string act=null)
@@ -59,6 +63,18 @@ namespace stork
                     break;
                 case Error.invalid_function_name:
                     Console.WriteLine("STKI FATAL E011: Function identifier given, but the name is invalid or nonexistant.");
+                    break;
+                case Error.invalid_parameter_type:
+                    Console.WriteLine("STKI FATAL E012: You cannot give this function the type of parameter specified.");
+                    break;
+                case Error.function_proto_nodefine:
+                    Console.WriteLine("STKI FATAL E013: Function prototype declared, but is not closed by an endline character or a definition.");
+                    break;
+                case Error.function_missing_parameter_separator:
+                    Console.WriteLine("STKI FATAL E014: Another function parameter is given, but there is no separator.");
+                    break;
+                case Error.function_missing_parameter:
+                    Console.WriteLine("STKI FATAL E015: A parameter separator was given, but no parameter follows it.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");
