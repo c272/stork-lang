@@ -513,7 +513,7 @@ namespace stork
                                             }
                                         }
                                         //Checking if parameter was asked for but not given.
-                                        else if (parameters.Count > 0 && isNextParam)
+                                        else if (lexerList[pos-1].type==Type.parameter_separator && parameters.Count > 0 && isNextParam)
                                         {
                                             //Parameter required but not detected.
                                             StorkError.printError(StorkError.Error.function_missing_parameter);
