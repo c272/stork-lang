@@ -24,7 +24,8 @@ namespace stork
             invalid_parameter_type,
             function_proto_nodefine,
             function_missing_parameter_separator,
-            function_missing_parameter
+            function_missing_parameter,
+            no_type_found
         }
 
         public static void printError(Error err, bool fatal = true, string act=null)
@@ -75,6 +76,9 @@ namespace stork
                     break;
                 case Error.function_missing_parameter:
                     Console.WriteLine("STKI FATAL E015: A parameter separator was given, but no parameter follows it.");
+                    break;
+                case Error.no_type_found:
+                    Console.WriteLine("STKI FATAL E016: No valid type was found in check where one was expected.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");

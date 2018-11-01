@@ -52,7 +52,7 @@ namespace stork
         public int blockLayer = 0;
 
         //The array of all evaluable types.
-        Type[] evaluables = { Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
+        Type[] evaluables = { Type.less_than, Type.more_than, Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
         //The array of all literal types.
         Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type.unknown_identifier };
         //The array of all possible separators.
@@ -127,7 +127,11 @@ namespace stork
             function_create_unknown_position,
             function_create_end,
             function_end,
-            function_start
+            function_start,
+            check_less_or_equal,
+            check_less,
+            check_more_or_equal,
+            check_more
         }
 
         public class ActionItem
@@ -647,6 +651,29 @@ namespace stork
                         addItem(Action.check_equals);
                         j++;
                     }
+                    else if (lexerList[j].type==Type.less_than)
+                    {
+                        if (lexerList[j+1].type==Type.equals)
+                        {
+                            addItem(Action.check_less_or_equal);
+                        } else
+                        {
+                            addItem(Action.check_less);
+                        }
+                        j++;
+                    }
+                    else if (lexerList[j].type == Type.more_than)
+                    {
+                        if (lexerList[j + 1].type == Type.equals)
+                        {
+                            addItem(Action.check_more_or_equal);
+                        }
+                        else
+                        {
+                            addItem(Action.check_more);
+                        }
+                        j++;
+                    }
                     else if (lexerList[j].type == Type.statement_open)
                     {
                         if (lexerList[j - 1].type != Type.if_statement && lexerList[j-1].type!=Type.elseif_statement)
@@ -665,6 +692,13 @@ namespace stork
                     else if (lexerList[j].type == Type.binary_and)
                     {
                         addItem(Action.check_bin_and);
+                    } else if (lexerList[j].type==Type.float_literal || lexerList[j].type==Type.int_literal)
+                    {
+                        addItem(Action.number_literal, lexerList[j].item);
+                    } else
+                    {
+                        //Print error, no type found.
+                        StorkError.printError(StorkError.Error.no_type_found, true, lexerList[j].type+" -> "+lexerList[j].item);
                     }
                 }
                 else
