@@ -54,7 +54,7 @@ namespace stork
         //The array of all evaluable types.
         Type[] evaluables = { Type.less_than, Type.more_than, Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
         //The array of all literal types.
-        Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type.unknown_identifier };
+        Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type._string, Type.unknown_identifier };
         //The array of all possible separators.
         Type[] separators = { Type.parameter_separator, Type.accessor_symbol };
         //Array of all data types.

@@ -190,6 +190,7 @@ namespace stork
                     case "float ":
                     case "bool ":
                     case "gen ":
+                    case "string ":
                         //Variable keyword detected. Add to list.
                         addToList(Type.variable_identifier, token.Substring(0, token.Length - 1));
                         token = "";
