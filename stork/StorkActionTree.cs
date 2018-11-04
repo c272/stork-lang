@@ -314,16 +314,19 @@ namespace stork
                         break;
                     case Type.more_than:
                         break;
-                    case Type.preprocess_directive:
+                    case Type.preprocess_identifier:
                         //Detected a preprocess directive symbol. Checking if the next symbol is a preprocess identifier.
-                        if (checkNext(i, Type.preprocess_identifier) && literals.Contains(lexerList[i+1].type))
+                        if (checkNext(i, Type.preprocess_directive) && literals.Contains(lexerList[i+2].type))
                         {
                             //It is a preprocess directive, so send to the processing class.
                             //Add to the preprocessing queue.
                             preprocessQueue.Add(lexerList[i+1].item, lexerList[i+2].item);
+
+                            //Skip to after the item in the lexerList.
+                            i += 2;
                         } else
                         {
-                            if (!checkNext(i, Type.preprocess_identifier))
+                            if (!checkNext(i, Type.preprocess_directive))
                             {
                                 //Error, preprocess symbol detected but no identifier/value.
                                 StorkError.printError(StorkError.Error.preprocess_no_identifier);
@@ -334,8 +337,12 @@ namespace stork
                                 StorkError.printError(StorkError.Error.preprocess_no_value);
                             }
                         }
+                        foreach (KeyValuePair<string, string> entry in preprocessQueue)
+                        {
+                            Console.WriteLine(entry.Value);
+                        }
                         break;
-                    case Type.preprocess_identifier:
+                    case Type.preprocess_directive:
                         break;
                     case Type.statement_close:
                         //Check if currently in function parameters.

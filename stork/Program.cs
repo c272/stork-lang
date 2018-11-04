@@ -61,10 +61,10 @@ namespace stork
             
             //Printing.
             Console.WriteLine("\nACTION TREE:");
-            Console.WriteLine("Action Length: "+stkact.actionTree.Count+"\n");
-            for (int i=0; i<stkact.actionTree.Count; i++)
+            Console.WriteLine("Action Length: "+StorkActionTree.actionTree.Count+"\n");
+            for (int i=0; i<StorkActionTree.actionTree.Count; i++)
             {
-                Console.WriteLine(stkact.actionTree[i].act + " " + stkact.actionTree[i].item);
+                Console.WriteLine(StorkActionTree.actionTree[i].act + " " + StorkActionTree.actionTree[i].item);
             }
             Console.WriteLine("\n");
 
