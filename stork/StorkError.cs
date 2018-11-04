@@ -25,7 +25,10 @@ namespace stork
             function_proto_nodefine,
             function_missing_parameter_separator,
             function_missing_parameter,
-            no_type_found
+            no_type_found,
+            preprocess_no_identifier,
+            preprocess_no_value,
+            preprocess_invalid_identifier
         }
 
         public static void printError(Error err, bool fatal = true, string act=null)
@@ -79,6 +82,15 @@ namespace stork
                     break;
                 case Error.no_type_found:
                     Console.WriteLine("STKI FATAL E016: No valid type was found in check where one was expected.");
+                    break;
+                case Error.preprocess_no_identifier:
+                    Console.WriteLine("STKI FATAL E017: Preprocess symbol detected, but no identifier followed.");
+                    break;
+                case Error.preprocess_no_value:
+                    Console.WriteLine("STKI FATAL E018: Preprocess identifier detected, but no value was given.");
+                    break;
+                case Error.preprocess_invalid_identifier:
+                    Console.WriteLine("STKI FATAL E019: Invalid preprocess identifier given.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");

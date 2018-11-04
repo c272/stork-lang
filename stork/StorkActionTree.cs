@@ -45,9 +45,10 @@ namespace stork
     {
         //Private property definitions here.
         public List<LexerItem> lexerList = new List<LexerItem>();
-        public List<ActionItem> actionTree = new List<ActionItem>();
-        public Dictionary<string, Variable> variableDictionary = new Dictionary<string, Variable>();
-        public Dictionary<string, Function> functionDictionary = new Dictionary<string, Function>();
+        public static List<ActionItem> actionTree = new List<ActionItem>();
+        public static Dictionary<string, Variable> variableDictionary = new Dictionary<string, Variable>();
+        public static Dictionary<string, Function> functionDictionary = new Dictionary<string, Function>();
+        public static Dictionary<string, string> preprocessQueue = new Dictionary<string, string>();
         ATState actionTreeState = ATState.DEFAULT;
         public int blockLayer = 0;
 
@@ -314,6 +315,25 @@ namespace stork
                     case Type.more_than:
                         break;
                     case Type.preprocess_directive:
+                        //Detected a preprocess directive symbol. Checking if the next symbol is a preprocess identifier.
+                        if (checkNext(i, Type.preprocess_identifier) && literals.Contains(lexerList[i+1].type))
+                        {
+                            //It is a preprocess directive, so send to the processing class.
+                            //Add to the preprocessing queue.
+                            preprocessQueue.Add(lexerList[i+1].item, lexerList[i+2].item);
+                        } else
+                        {
+                            if (!checkNext(i, Type.preprocess_identifier))
+                            {
+                                //Error, preprocess symbol detected but no identifier/value.
+                                StorkError.printError(StorkError.Error.preprocess_no_identifier);
+                            }
+                            else
+                            {
+                                //Error, identifier detected but no value.
+                                StorkError.printError(StorkError.Error.preprocess_no_value);
+                            }
+                        }
                         break;
                     case Type.preprocess_identifier:
                         break;
