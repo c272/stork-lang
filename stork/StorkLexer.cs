@@ -346,11 +346,6 @@ namespace stork
                         {
                             //Checking for literal.
                             bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
-                            if (!foundLiteral)
-                            {
-                                //Assuming unknown identifier and pushing.
-                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
-                            }
                             addToList(Type.less_than);
                             token = "";
                         }
@@ -358,11 +353,6 @@ namespace stork
                         {
                             //Checking for literal.
                             bool foundLiteral = findLiteral(token.Substring(0, token.Length - 1));
-                            if (!foundLiteral)
-                            {
-                                //Assuming unknown identifier and pushing.
-                                addToList(Type.unknown_identifier, token.Substring(0, token.Length - 1));
-                            }
                             addToList(Type.more_than);
                             token = "";
                         } else if (c=='+')
