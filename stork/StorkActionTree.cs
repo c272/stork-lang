@@ -56,6 +56,8 @@ namespace stork
         Type[] evaluables = { Type.less_than, Type.more_than, Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
         //The array of all literal types.
         Type[] literals = { Type.int_literal, Type.float_literal, Type.boolean_literal, Type._string, Type.unknown_identifier };
+        //The array of all action types.
+        Type[] actions = { Type.unknown_identifier, Type.addition_operator, Type.minus_operator, Type.equals, Type.int_literal, Type.float_literal, Type.boolean_literal, Type._string};
         //The array of all possible separators.
         Type[] separators = { Type.parameter_separator, Type.accessor_symbol };
         //Array of all data types.
@@ -132,7 +134,8 @@ namespace stork
             check_less_or_equal,
             check_less,
             check_more_or_equal,
-            check_more
+            check_more,
+            for_statement_start
         }
 
         public class ActionItem
@@ -290,6 +293,94 @@ namespace stork
                         }
                         break;
                     case Type.for_statement:
+                        //Adding "for_statement_start" to ActionTree.
+                        addItem(Action.for_statement_start);
+
+                        //Outlining for loop syntax.
+                        // for (TYPE NAME = VALUE; CHECK; ENDLOOPACT) {};
+                        if (lexerList[i+1].type!=Type.statement_open)
+                        {
+                            StorkError.printError(StorkError.Error.expected_statement);
+                        } else
+                        {
+                            //Checking for variable identifier and then an unknown, followed by "= literal".
+                            int j = i + 2;
+                            while (true)
+                            {
+                                if (j == i + 2 && lexerList[j].type != Type.variable_identifier)
+                                {
+                                    //No valid variable identifier.
+                                    StorkError.printError(StorkError.Error.no_type_found);
+                                }
+                                else if (j == i + 3 && lexerList[j].type != Type.unknown_identifier)
+                                {
+                                    //No variable name given.
+                                    StorkError.printError(StorkError.Error.invalid_variable_name);
+                                }
+                                else if (j == i + 4 && lexerList[j].type != Type.equals)
+                                {
+                                    //Nope, no equals value detected after init.
+                                    StorkError.printError(StorkError.Error.invalid_statement);
+                                } else if (j==i+5 && !literals.Contains(lexerList[j].type))
+                                {
+                                    //No literal found after equals.
+                                    StorkError.printError(StorkError.Error.cannot_assign_variable_value);
+                                } else if (j==i+6 && lexerList[j].type!=Type.endline)
+                                {
+                                    //No endline character found in if loop.
+                                    StorkError.printError(StorkError.Error.expected_endline);
+                                } else if (j==i+7)
+                                {
+                                    break;
+                                }
+
+                                j++;
+                            }
+
+                            //Now evaluating the "check" statement to be run at the start of each loop.
+                            int endStatement = findEndLine(j);
+                            if (endStatement==-1)
+                            {
+                                StorkError.printError(StorkError.Error.expected_endline);
+                            }
+
+                            //Checking if the "checkstat" contains valid types.
+                            string statString="";
+                            for (int k=j; k<=endStatement; k++) {
+                                statString += lexerList[k].item;
+                                if (!evaluables.Contains(lexerList[k].type))
+                                {
+                                    //Invalid non-evaluable type found, throw error.
+                                    StorkError.printError(StorkError.Error.invalid_statement, true, statString);
+                                }
+                            }
+
+                            //eval statement
+                            //....
+
+                            //Contains valid statement, now check loopstart statement.
+                            j = endStatement + 1;
+                            endStatement = findEndLine(j);
+                            if (endStatement == -1)
+                            {
+                                StorkError.printError(StorkError.Error.expected_endline);
+                            }
+
+                            //Checking for valid types.
+                            statString = "";
+                            for (int k=j; k<=endStatement; k++)
+                            {
+                                statString += lexerList[k].item;
+                                if (!actions.Contains(lexerList[k].type))
+                                {
+                                    //Invalid type.
+                                    StorkError.printError(StorkError.Error.invalid_statement, true, statString);
+                                }
+                            }
+
+                            //eval statement
+                            //...
+                        }
                         break;
                     case Type.if_statement:
                         //Checking if next element is of type "statement_open".
@@ -615,6 +706,26 @@ namespace stork
                     default:
                         break;
                     
+                }
+            }
+        }
+
+        private int findEndLine(int endStatement)
+        {
+            while (true)
+            {
+                try
+                {
+                    if (lexerList[endStatement].type == Type.endline)
+                    {
+                        return endStatement;
+                    }
+                    endStatement++;
+                }
+                catch
+                {
+                    //Nope, ran out of range.
+                    return -1;
                 }
             }
         }
