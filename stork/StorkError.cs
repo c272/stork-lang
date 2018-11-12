@@ -28,7 +28,10 @@ namespace stork
             no_type_found,
             preprocess_no_identifier,
             preprocess_no_value,
-            preprocess_invalid_identifier
+            preprocess_invalid_identifier,
+            expected_endline,
+            for_statement_overflow,
+            for_statement_underflow
         }
 
         public static void printError(Error err, bool fatal = true, string act=null)
@@ -91,6 +94,12 @@ namespace stork
                     break;
                 case Error.preprocess_invalid_identifier:
                     Console.WriteLine("STKI FATAL E019: Invalid preprocess identifier given.");
+                    break;
+                case Error.expected_endline:
+                    Console.WriteLine("STKI FATAL E020: No endline character detected where one was expected.");
+                    break;
+                case Error.for_statement_overflow:
+                    Console.WriteLine("STKI FATAL E021: Too many statements in a single for loop.");
                     break;
                 default:
                     Console.WriteLine("STKI FATAL: Invalid error code given.");
