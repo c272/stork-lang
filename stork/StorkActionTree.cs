@@ -227,7 +227,7 @@ namespace stork
                         break;
                     case Type.binary_and:
                     case Type.binary_or:
-                        StorkError.printError(StorkError.Error.syntax_error_identifier, true, "||");
+                        StorkError.printError(StorkError.Error.syntax_error_identifier, true, "|| or &&");
                         break;
                     case Type.block_close:
                         //Check if currently in a function.
@@ -275,6 +275,7 @@ namespace stork
                         addItem(Action.check_elseif_end);
                         break;
                     case Type.endline:
+                        //Ignoring endlines for now.
                         break;
                     case Type.equals:
                         //Checking if it's a double equals.
@@ -289,19 +290,6 @@ namespace stork
                         }
                         break;
                     case Type.for_statement:
-                        //Looking for for loop syntax: for (SETVAR; CHECK1; ENDLOOPACTION) {}
-                        if (lexerList[i+1].type!=Type.statement_open)
-                        {
-                            StorkError.printError(StorkError.Error.expected_statement);
-                        } else
-                        {
-                            //Checking syntax forward from this.
-                            //Outlined as follows:
-                            //statement_open -> variable_identifier -> unknown_identifier -> equals -> literal -> endline
-                            //literal or variable -> (comparison of some sort) -> literal or variable -> endline;
-                            //variable_identifier -> equals -> statement;
-
-                        }
                         break;
                     case Type.if_statement:
                         //Checking if next element is of type "statement_open".
@@ -621,6 +609,8 @@ namespace stork
                     case Type.while_statement:
                         break;
                     case Type._string:
+                        //Throw error, can't just have a string without a declaration or other.
+                        StorkError.printError(StorkError.Error.syntax_error_identifier, true, lexerList[i].item);
                         break;
                     default:
                         break;
