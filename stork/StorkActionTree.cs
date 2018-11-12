@@ -38,7 +38,8 @@ namespace stork
     {
         DEFAULT,
         IN_FUNC_PARAMS,
-        IN_FUNC
+        IN_FUNC,
+        IN_FOR_LOOP
     }
 
     class StorkActionTree
@@ -51,6 +52,7 @@ namespace stork
         public static Dictionary<string, string> preprocessQueue = new Dictionary<string, string>();
         ATState actionTreeState = ATState.DEFAULT;
         public int blockLayer = 0;
+        public int forLoopStatementPosition = 0;
 
         //The array of all evaluable types.
         Type[] evaluables = { Type.less_than, Type.more_than, Type.statement_open, Type.statement_close, Type.float_literal, Type.int_literal, Type.boolean_literal, Type.equals, Type.binary_and, Type.binary_or, Type.unknown_identifier };
@@ -135,7 +137,14 @@ namespace stork
             check_less,
             check_more_or_equal,
             check_more,
-            for_statement_start
+            for_statement_start,
+            for_statement_end_init,
+            for_statement_start_init,
+            for_statement_start_check,
+            for_statement_end_check,
+            for_statement_start_step,
+            for_statement_end_step,
+            for_statement_end
         }
 
         public class ActionItem
@@ -224,7 +233,9 @@ namespace stork
                         {
                             //Double plus, so the iterate operator.
                             addItem(Action.iterate_operator);
-                        } else{
+                            //Skip one.
+                            i++;
+                        } else {
                             addItem(Action.addition_operator);
                         }
                         break;
@@ -278,14 +289,46 @@ namespace stork
                         addItem(Action.check_elseif_end);
                         break;
                     case Type.endline:
-                        //Ignoring endlines for now.
+                        //Checking if action tree is in a for loop.
+                        if (actionTreeState == ATState.IN_FOR_LOOP)
+                        {
+                            //Yes, end the current statement.
+                            switch (forLoopStatementPosition)
+                            {
+                                case 0:
+                                    addItem(Action.for_statement_end_init);
+                                    addItem(Action.for_statement_start_check);
+                                    forLoopStatementPosition++;
+                                    break;
+                                case 1:
+                                    addItem(Action.for_statement_end_check);
+                                    addItem(Action.for_statement_start_step);
+                                    forLoopStatementPosition++;
+                                    break;
+                                case 2:
+                                    addItem(Action.for_statement_end_step);
+                                    break;
+                                default:
+                                    //Throw error, too many statements!
+                                    StorkError.printError(StorkError.Error.for_statement_overflow);
+                                    break;
+                            }
+                        }
                         break;
                     case Type.equals:
                         //Checking if it's a double equals.
-                        if (lexerList[i+1].type==Type.equals)
+                        if (lexerList[i + 1].type == Type.equals)
                         {
-                            //Throw syntax error, it's a check outside of a comparison.
-                            StorkError.printError(StorkError.Error.check_outside_comparison);
+                            if (actionTreeState == ATState.DEFAULT)
+                            {
+                                //Equals outside of check.
+                                StorkError.printError(StorkError.Error.check_outside_comparison);
+                            } else
+                            {
+                                //Add double equals and skip one.
+                                addItem(Action.check_equals);
+                                i++;
+                            }
                         } else
                         {
                             //Add to list.
@@ -295,10 +338,11 @@ namespace stork
                     case Type.for_statement:
                         //Adding "for_statement_start" to ActionTree.
                         addItem(Action.for_statement_start);
+                        addItem(Action.for_statement_start_init);
 
                         //Outlining for loop syntax.
                         // for (TYPE NAME = VALUE; CHECK; ENDLOOPACT) {};
-                        if (lexerList[i+1].type!=Type.statement_open)
+                        if (lexerList[i + 1].type != Type.statement_open)
                         {
                             StorkError.printError(StorkError.Error.expected_statement);
                         } else
@@ -321,15 +365,15 @@ namespace stork
                                 {
                                     //Nope, no equals value detected after init.
                                     StorkError.printError(StorkError.Error.invalid_statement);
-                                } else if (j==i+5 && !literals.Contains(lexerList[j].type))
+                                } else if (j == i + 5 && !literals.Contains(lexerList[j].type))
                                 {
                                     //No literal found after equals.
                                     StorkError.printError(StorkError.Error.cannot_assign_variable_value);
-                                } else if (j==i+6 && lexerList[j].type!=Type.endline)
+                                } else if (j == i + 6 && lexerList[j].type != Type.endline)
                                 {
                                     //No endline character found in if loop.
                                     StorkError.printError(StorkError.Error.expected_endline);
-                                } else if (j==i+7)
+                                } else if (j == i + 7)
                                 {
                                     break;
                                 }
@@ -339,14 +383,14 @@ namespace stork
 
                             //Now evaluating the "check" statement to be run at the start of each loop.
                             int endStatement = findEndLine(j);
-                            if (endStatement==-1)
+                            if (endStatement == -1)
                             {
                                 StorkError.printError(StorkError.Error.expected_endline);
                             }
 
                             //Checking if the "checkstat" contains valid types.
-                            string statString="";
-                            for (int k=j; k<=endStatement; k++) {
+                            string statString = "";
+                            for (int k = j; k < endStatement; k++) {
                                 statString += lexerList[k].item;
                                 if (!evaluables.Contains(lexerList[k].type))
                                 {
@@ -354,9 +398,6 @@ namespace stork
                                     StorkError.printError(StorkError.Error.invalid_statement, true, statString);
                                 }
                             }
-
-                            //eval statement
-                            //....
 
                             //Contains valid statement, now check loopstart statement.
                             j = endStatement + 1;
@@ -368,7 +409,7 @@ namespace stork
 
                             //Checking for valid types.
                             statString = "";
-                            for (int k=j; k<=endStatement; k++)
+                            for (int k = j; k < endStatement; k++)
                             {
                                 statString += lexerList[k].item;
                                 if (!actions.Contains(lexerList[k].type))
@@ -378,13 +419,13 @@ namespace stork
                                 }
                             }
 
-                            //eval statement
-                            //...
+                            //Set ATState as inside a for loop.
+                            actionTreeState = ATState.IN_FOR_LOOP;
                         }
                         break;
                     case Type.if_statement:
                         //Checking if next element is of type "statement_open".
-                        if(!checkNext(i, Type.statement_open))
+                        if (!checkNext(i, Type.statement_open))
                         {
                             //Is not, throw error.
                             StorkError.printError(StorkError.Error.expected_statement, true, "No open bracket after an if statement is declared.");
@@ -401,10 +442,32 @@ namespace stork
                         addItem(Action.number_literal, lexerList[i].item);
                         break;
                     case Type.less_than:
-                        break;
-                    case Type.minus_operator:
+                        //Checking if next character is equals.
+                        if (lexerList[i + 1].type == Type.equals)
+                        {
+                            //Adding a less than/equal to operator.
+                            addItem(Action.check_less_or_equal);
+                            i++;
+                        } else {
+                            //Adding a normal operator.
+                            addItem(Action.check_less);
+                        }
                         break;
                     case Type.more_than:
+                        //Checking if next character is equals.
+                        if (lexerList[i + 1].type == Type.equals)
+                        {
+                            //Adding a less than/equal to operator.
+                            addItem(Action.check_more_or_equal);
+                            i++;
+                        }
+                        else
+                        {
+                            //Adding a normal operator.
+                            addItem(Action.check_more);
+                        }
+                        break;
+                    case Type.minus_operator:
                         break;
                     case Type.preprocess_identifier:
                         //Detected a preprocess directive symbol. Checking if the next symbol is a preprocess identifier.
@@ -442,6 +505,19 @@ namespace stork
                         {
                             //Yes, so end the function parameter block.
                             addItem(Action.run_function_param_end);
+                        } else if (actionTreeState == ATState.IN_FOR_LOOP)
+                        {
+                            //Check if the statement quota for the loop has been met.
+                            if (forLoopStatementPosition!=2)
+                            {
+                                StorkError.printError(StorkError.Error.for_statement_underflow);
+                            } else
+                            {
+                                //Resetting.
+                                forLoopStatementPosition = 0;
+                                addItem(Action.for_statement_end);
+                                actionTreeState = ATState.DEFAULT;
+                            }
                         } else
                         {
                             //No, just a normal end statement then.
