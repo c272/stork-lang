@@ -289,6 +289,19 @@ namespace stork
                         }
                         break;
                     case Type.for_statement:
+                        //Looking for for loop syntax: for (SETVAR; CHECK1; ENDLOOPACTION) {}
+                        if (lexerList[i+1].type!=Type.statement_open)
+                        {
+                            StorkError.printError(StorkError.Error.expected_statement);
+                        } else
+                        {
+                            //Checking syntax forward from this.
+                            //Outlined as follows:
+                            //statement_open -> variable_identifier -> unknown_identifier -> equals -> literal -> endline
+                            //literal or variable -> (comparison of some sort) -> literal or variable -> endline;
+                            //variable_identifier -> equals -> statement;
+
+                        }
                         break;
                     case Type.if_statement:
                         //Checking if next element is of type "statement_open".
