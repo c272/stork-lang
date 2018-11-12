@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +49,7 @@ namespace stork
 
             //Output lexer contents.
             Console.WriteLine("\nLEXER LIST:");
+            Console.WriteLine("Lexer Length: " + lexer.lexerList.Count+"\n");
             for (int i=0; i<lexer.lexerList.Count; i++)
             {
                 Console.WriteLine(lexer.lexerList[i].type+" -> \""+lexer.lexerList[i].item+"\"");
