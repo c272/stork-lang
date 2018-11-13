@@ -144,7 +144,9 @@ namespace stork
             for_statement_end_check,
             for_statement_start_step,
             for_statement_end_step,
-            for_statement_end
+            for_statement_end,
+            decrement_operator,
+            minus_operator
         }
 
         public class ActionItem
@@ -468,6 +470,16 @@ namespace stork
                         }
                         break;
                     case Type.minus_operator:
+                        //Checking if the next character is minus.
+                        if (checkNext(i, Type.minus_operator))
+                        {
+                            //Adding a decrement operator.
+                            addItem(Action.decrement_operator);
+                            i++;
+                        } else
+                        {
+                            addItem(Action.minus_operator);
+                        }
                         break;
                     case Type.preprocess_identifier:
                         //Detected a preprocess directive symbol. Checking if the next symbol is a preprocess identifier.
@@ -498,6 +510,8 @@ namespace stork
                         }
                         break;
                     case Type.preprocess_directive:
+                        //Error, preprocess directive should only be after symbol.
+                        StorkError.printError(StorkError.Error.syntax_error_identifier, true, lexerList[i].item);
                         break;
                     case Type.statement_close:
                         //Check if currently in function parameters.
