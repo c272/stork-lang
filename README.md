@@ -9,7 +9,7 @@ Stork is a C-like programming language that aims to make the tasks that would be
 The language is currently not ready for general use, and is currently in the lexing/action tree stage of development. If, however, you want to contribute to the library, feel free to fork and make a pull request, which are considered on a case-by-case basis. Please remember to check the pull request templates beforehand.
 
 ## Building Stork
-To build the interpreter or transpiler for Stork, you need at least Visual Studio 2015 (Update 3) or higher. Since Stork uses .NET Standard, this is not compileable (at least through traditional methods) on Linux or Mac.
+To build the interpreter or transpiler for Stork, you need at least Visual Studio 2015 (Update 3) or higher. Since Stork uses .NET Standard, this is only compileable on Linux through the use of Mono.
 
 (*Note: The transpiler **will** output files that are compileable on Mac and Linux, however the transpiler itself and the interpreter are strictly Windows-only.*)
 
