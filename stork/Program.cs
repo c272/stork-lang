@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace stork
 {
@@ -11,64 +11,39 @@ namespace stork
     {
         static void Main(string[] args)
         {
-            //Checking that the command line arguments are given.
-            if (args.Length<1)
+            //Opening the provided file.
+            //string script = File.ReadAllText(args[0]);
+
+            //Setting up the tokenizer with the token regex patterns.
+            AddToken("[~]{1}", TokenType.PreprocessorStatement, 2);
+            AddToken("[(]{1}", TokenType.OpenBracket, 2);
+            AddToken("[)]{1}", TokenType.CloseBracket, 2);
+            AddToken("[{]{1}", TokenType.OpenCBracket, 2);
+            AddToken("[}]{1}", TokenType.CloseCBracket, 2);
+            AddToken("[;]{1}", TokenType.EndLine, 2);
+            AddToken("[\"]{1}[a-zA-Z][a-zA-Z0-9\\s]*[\"]{1}", TokenType.StringLiteral, 1);
+            AddToken("[0-9]+", TokenType.IntLiteral, 2);
+            AddToken("func", TokenType.FunctionDefinition, 2);
+            AddToken("[,]{1}", TokenType.Separator, 2);
+            AddToken("(^|\\s)[a-zA-Z][a-zA-Z0-9]*", TokenType.Identifier, 3);
+
+            //Tokenizing the given script.
+            List <Token> tokens = Tokenizer.Process(
+            "func b() {" +
+            "\"this is epic\";" +
+            "\n"+
+            "}"
+            );
+
+            foreach (var token in tokens)
             {
-                StorkError.printError(StorkError.Error.invalid_args);
-                return;
+                Console.WriteLine(token.Value + " | " + token.Type);
             }
+        }
 
-            //Command line arguments are given, continue.
-            switch (args[0])
-            {
-                case "--help":
-                    //Printing the help section.
-                    return;
-            }
-
-            //Assuming parameter is a file, attempt to load.
-            string file = "";
-            if(!StorkIO.loadFile(args[0], ref file))
-            {
-                StorkError.printError(StorkError.Error.invalid_file);
-                return;
-            }
-
-            //Stripping string of all endline characters.
-            Console.WriteLine("Replacing endline characters...");
-            file = Regex.Replace(file, @"\r\n?|\n", "");
-            Console.WriteLine("\nSTRIPPED FILE:\n"+file+"\n");
-
-            //File is now loaded in, pass it to the lexer.
-            Console.WriteLine("Lexing document...");
-            StorkLexer lexer = new stork.StorkLexer();
-            foreach (char c in file)
-            {
-                lexer.feed(c);
-            }
-
-            //Output lexer contents.
-            Console.WriteLine("\nLEXER LIST:");
-            for (int i=0; i<lexer.lexerList.Count; i++)
-            {
-                Console.WriteLine(lexer.lexerList[i].type+" -> \""+lexer.lexerList[i].item+"\"");
-            }
-            Console.WriteLine("");
-
-            //Lexing is finished, now transfer onto the LexerScript -> ActionTreeScript conversion.
-            Console.WriteLine("Converting lexed document to ActionScript...");
-            StorkActionTree stkact = new StorkActionTree(lexer.lexerList);
-            
-            //Printing.
-            Console.WriteLine("\nACTION TREE:");
-            Console.WriteLine("Action Length: "+StorkActionTree.actionTree.Count+"\n");
-            for (int i=0; i<StorkActionTree.actionTree.Count; i++)
-            {
-                Console.WriteLine(StorkActionTree.actionTree[i].act + " " + StorkActionTree.actionTree[i].item);
-            }
-            Console.WriteLine("\n");
-
-            Console.WriteLine("Beginning ActionScript interpreting...");
+        static void AddToken(string reg, TokenType t, int prec)
+        {
+            Tokenizer.AddToken(reg, t, prec);
         }
     }
 }

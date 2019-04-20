@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stork", "stork\stork.csproj", "{93386A45-D190-4011-BDD8-306D9D9CA08F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stork", "stork\stork.csproj", "{2BC39E03-C117-425E-82A2-36C5830DDAF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{93386A45-D190-4011-BDD8-306D9D9CA08F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{93386A45-D190-4011-BDD8-306D9D9CA08F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{93386A45-D190-4011-BDD8-306D9D9CA08F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{93386A45-D190-4011-BDD8-306D9D9CA08F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BC39E03-C117-425E-82A2-36C5830DDAF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BC39E03-C117-425E-82A2-36C5830DDAF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BC39E03-C117-425E-82A2-36C5830DDAF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BC39E03-C117-425E-82A2-36C5830DDAF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C08E0CC3-E5E7-45B1-863A-75ED7677CC2B}
 	EndGlobalSection
 EndGlobal

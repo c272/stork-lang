@@ -1,2 +1,0 @@
-﻿STKI E001: No command line arguments given, use --help for more information.
-STKI E002: Invalid file path given, or error reading the file.
