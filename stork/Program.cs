@@ -1,9 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
+using Antlr4;
+using Antlr4.Runtime;
+using stork.Grammars;
 
 namespace stork
 {
@@ -11,39 +13,24 @@ namespace stork
     {
         static void Main(string[] args)
         {
-            //Opening the provided file.
-            //string script = File.ReadAllText(args[0]);
+            //Test input string.
+            string input = "flt banana = epicFunctionTime(2, 13.42, \"margaret\");";
+            var chars = new AntlrInputStream(input);
+            var lexer = new storkLexer(chars);
+            var tokens = new CommonTokenStream(lexer);
 
-            //Setting up the tokenizer with the token regex patterns.
-            AddToken("[~]{1}", TokenType.PreprocessorStatement, 2);
-            AddToken("[(]{1}", TokenType.OpenBracket, 2);
-            AddToken("[)]{1}", TokenType.CloseBracket, 2);
-            AddToken("[{]{1}", TokenType.OpenCBracket, 2);
-            AddToken("[}]{1}", TokenType.CloseCBracket, 2);
-            AddToken("[;]{1}", TokenType.EndLine, 2);
-            AddToken("[\"]{1}[a-zA-Z][a-zA-Z0-9\\s]*[\"]{1}", TokenType.StringLiteral, 1);
-            AddToken("[0-9]+", TokenType.IntLiteral, 2);
-            AddToken("func", TokenType.FunctionDefinition, 2);
-            AddToken("[,]{1}", TokenType.Separator, 2);
-            AddToken("(^|\\s)[a-zA-Z][a-zA-Z0-9]*", TokenType.Identifier, 3);
+            //Debug print.
+            ANTLRDebug.PrintTokens(lexer);
 
-            //Tokenizing the given script.
-            List <Token> tokens = Tokenizer.Process(
-            "func b() {" +
-            "\"this is epic\";" +
-            "\n"+
-            "}"
-            );
+            var parser = new storkParser(tokens);
+            parser.BuildParseTree = true;
 
-            foreach (var token in tokens)
-            {
-                Console.WriteLine(token.Value + " | " + token.Type);
-            }
-        }
+            //Getting tree.
+            var tree = parser.compileUnit();
 
-        static void AddToken(string reg, TokenType t, int prec)
-        {
-            Tokenizer.AddToken(reg, t, prec);
+            //Starting the walk.
+            var visitor = new storkVisitor();
+            visitor.VisitCompileUnit(tree);
         }
     }
 }
