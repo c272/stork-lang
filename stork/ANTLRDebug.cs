@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4;
 using Antlr4.Runtime;
+using stork.Grammars;
 
 namespace stork
 {
@@ -19,11 +20,27 @@ namespace stork
             var vocab = lexer.Vocabulary;
 
             //Printing, for each token.
-            Console.WriteLine("ANTLR Debug Tokens:");
+            Console.WriteLine("ANTLR Lexed Tokens:");
             foreach (var tok in tokens)
             {
                 Console.WriteLine("[" + vocab.GetSymbolicName(tok.Type) + ", " + tok.Text + ", channel=" + tok.Channel + "]");
             }
+        }
+
+        public static void PrintParseList(storkParser parser)
+        {
+            parser.BuildParseTree = true;
+            var tree = parser.compileUnit();
+            Console.WriteLine(parser.statement().GetText());
+
+            //Printing debug string.
+            Console.WriteLine("ANTLR Debug Parse:");
+            Console.WriteLine(tree.ToInfoString(parser));
+            Console.WriteLine("");
+
+            //Printing parse tree.
+            Console.WriteLine("ANTLR Parse Tree:");
+            Console.WriteLine(tree.ToStringTree());
         }
     }
 }

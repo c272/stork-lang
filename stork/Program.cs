@@ -14,7 +14,7 @@ namespace stork
         static void Main(string[] args)
         {
             //Test input string.
-            string input = "flt banana = epicFunctionTime(2, 13.42, \"margaret\");";
+            string input = "int banana = 142;";
             var chars = new AntlrInputStream(input);
             var lexer = new storkLexer(chars);
             var tokens = new CommonTokenStream(lexer);
@@ -22,10 +22,12 @@ namespace stork
             //Debug print.
             ANTLRDebug.PrintTokens(lexer);
 
+            //Debug print tree.
             var parser = new storkParser(tokens);
-            parser.BuildParseTree = true;
-
+            ANTLRDebug.PrintParseList(parser);
+            
             //Getting tree.
+            parser.BuildParseTree = true;
             var tree = parser.compileUnit();
 
             //Starting the walk.
