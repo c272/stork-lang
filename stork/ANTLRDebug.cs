@@ -26,7 +26,7 @@ namespace stork
             Console.WriteLine("ANTLR Lexed Tokens:");
             foreach (var tok in tokens)
             {
-                Console.WriteLine("[" + vocab.GetSymbolicName(tok.Type) + ", " + tok.Text + ", channel=" + tok.Channel + "]");
+                Console.WriteLine("[" + vocab.GetSymbolicName(tok.Type) + ", " + tok.Text + "]");
             }
             Console.WriteLine("");
 

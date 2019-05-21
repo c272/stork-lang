@@ -48,13 +48,12 @@ namespace stork
         //When an assignment is visited in Stork.
         public override object VisitStat_assign([NotNull] storkParser.Stat_assignContext context)
         {
-            //Evaluate the expression.
-            if (!context.expr().value().IsEmpty)
-            {
-                //It's a value, evaluate it.
-                StorkValue val = (StorkValue)VisitValue(context.expr().value());
-                Console.WriteLine(val.Value.ToString());
-            }
+            //Evaluate the expression, and get a value back.
+            StorkValue val = (StorkValue)VisitValue(context.expr().value());
+            Console.WriteLine(val.Value.ToString());
+
+            //Set the variable in the current scope to that.
+            //...
 
             return null;
         }
@@ -81,13 +80,22 @@ namespace stork
                     Value = context.FLOAT().GetText()
                 };
             }
+            else if (context.STRING() != null)
+            {
+                //Return a raw string.
+                return new StorkValue()
+                {
+                    Type = ValueType.STRING,
+                    Value = context.STRING().GetText().Replace("\"", "")
+                };
+            }
 
-            //oopsie
+            //Not a raw value, so it's a function call. Return that instead.
             return new StorkValue()
             {
-                Type = ValueType.STRING,
-                Value = "Unknown value."
+                Value = "func call"
             };
+            return (StorkValue)VisitStat_functionCall(context.stat_functionCall());
         }
     }
 }

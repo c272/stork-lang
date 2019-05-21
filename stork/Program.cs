@@ -12,7 +12,7 @@ namespace stork
         static void Main(string[] args)
         {
             //Test input string.
-            string input = "int banana = 12.123;";
+            string input = "int banana = epicFunc();";
 
             //Debug print.
             ANTLRDebug.PrintTokens(input);
