@@ -62,6 +62,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Antlr4 Include="stork.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>stork</CustomToolNamespace>

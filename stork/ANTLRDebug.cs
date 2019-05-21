@@ -25,6 +25,9 @@ namespace stork
                 Console.WriteLine("[" + vocab.GetSymbolicName(tok.Type) + ", " + tok.Text + ", channel=" + tok.Channel + "]");
             }
             Console.WriteLine("");
+
+            //Reset lexer so it can still be used.
+            lexer.Reset();
         }
 
         public static void PrintParseList(storkParser parser)
