@@ -14,15 +14,41 @@ block: statement*
 	 ;
 
 //A single statement.
-statement: stat_ass;
+statement: ( 
+			  stat_assign
+			| stat_functionCall
+		   )
+			ENDLINE
+		   ;
 
-stat_ass: IDENTIFIER IDENTIFIER SET_EQUALS value ENDLINE;
+//A variable assign statement.
+stat_assign: type=IDENTIFIER name=IDENTIFIER SET_EQUALS expr;
 
-//An expression that can contain a value.
+//A function call statement.
+stat_functionCall: id=IDENTIFIER LBRACKET params? RBRACKET;
+
+//A generic parameter list.
+params: (expr COMMA)* expr;
+
+//An expression to be evaluated which returns a value.
+expr:  
+		//Bracketed statement or a value.
+		LBRACKET expr RBRACKET
+	   | value
+
+		//Mathematical operations.
+	   | expr operator expr;
+	   
+
+//Something that contains a value in Stork.
 value:   INTEGER
 	   | FLOAT
 	   | STRING
-	   | IDENTIFIER;
+	   | IDENTIFIER
+	   | stat_functionCall;
+
+//A mathematical operator.
+operator: OP_ADD | OP_MUL | OP_MINUS | OP_DIV;
 
 /*
  * Lexer Rules
@@ -40,10 +66,19 @@ FLOAT: INTEGER '.' INTEGER
 STRING: QUOTE (~["])* QUOTE
 	  ;
 
-// CONSTANT SYMBOLS!
+//Operator symbols.
+OP_ADD: '+';
+OP_MINUS: '-';
+OP_MUL: '*';
+OP_DIV: '/';
+
+//Character constants.
 QUOTE: '"';
 ENDLINE: ';';
 SET_EQUALS: '=';
+LBRACKET: '(';
+RBRACKET: ')';
+COMMA: ',';
 
 //Identifier, should be a last resort.
 IDENTIFIER: [A-Za-z_] [A-Za-z_0-9]*;

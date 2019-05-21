@@ -65,15 +65,48 @@ public interface IstorkListener : IParseTreeListener {
 	void ExitStatement([NotNull] storkParser.StatementContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="storkParser.stat_ass"/>.
+	/// Enter a parse tree produced by <see cref="storkParser.stat_assign"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterStat_ass([NotNull] storkParser.Stat_assContext context);
+	void EnterStat_assign([NotNull] storkParser.Stat_assignContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="storkParser.stat_ass"/>.
+	/// Exit a parse tree produced by <see cref="storkParser.stat_assign"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitStat_ass([NotNull] storkParser.Stat_assContext context);
+	void ExitStat_assign([NotNull] storkParser.Stat_assignContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.stat_functionCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStat_functionCall([NotNull] storkParser.Stat_functionCallContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.stat_functionCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStat_functionCall([NotNull] storkParser.Stat_functionCallContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.params"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterParams([NotNull] storkParser.ParamsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.params"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitParams([NotNull] storkParser.ParamsContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExpr([NotNull] storkParser.ExprContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExpr([NotNull] storkParser.ExprContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.value"/>.
@@ -85,5 +118,16 @@ public interface IstorkListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitValue([NotNull] storkParser.ValueContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.operator"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterOperator([NotNull] storkParser.OperatorContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.operator"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitOperator([NotNull] storkParser.OperatorContext context);
 }
 } // namespace stork

@@ -14,3 +14,4 @@ D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkBaseListener.cs
 D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkVisitor.cs
 D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkBaseVisitor.cs
 D:\Files\Programming\GitHub\stork\stork\obj\Debug\stork.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\stork.csprojAssemblyReference.cache

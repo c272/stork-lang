@@ -54,11 +54,32 @@ public interface IstorkVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitStatement([NotNull] storkParser.StatementContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="storkParser.stat_ass"/>.
+	/// Visit a parse tree produced by <see cref="storkParser.stat_assign"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStat_ass([NotNull] storkParser.Stat_assContext context);
+	Result VisitStat_assign([NotNull] storkParser.Stat_assignContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.stat_functionCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStat_functionCall([NotNull] storkParser.Stat_functionCallContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.params"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitParams([NotNull] storkParser.ParamsContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpr([NotNull] storkParser.ExprContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="storkParser.value"/>.
@@ -66,5 +87,12 @@ public interface IstorkVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitValue([NotNull] storkParser.ValueContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.operator"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitOperator([NotNull] storkParser.OperatorContext context);
 }
 } // namespace stork

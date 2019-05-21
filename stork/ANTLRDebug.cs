@@ -10,8 +10,12 @@ namespace stork
 {
     public static class ANTLRDebug
     {
-        public static void PrintTokens(Lexer lexer)
+        public static void PrintTokens(string testString)
         {
+            //Creating lexer.
+            var chars = new AntlrInputStream(testString);
+            var lexer = new storkLexer(chars);
+
             //Getting tokens.
             var tokens = lexer.GetAllTokens();
 
@@ -30,20 +34,30 @@ namespace stork
             lexer.Reset();
         }
 
-        public static void PrintParseList(storkParser parser)
+        //Prints the entire processed ANTLR parse tree to console.
+        public static void PrintParseList(string testString)
         {
-            parser.BuildParseTree = true;
+            //Creating parser.
+            var chars = new AntlrInputStream(testString);
+            var lexer = new storkLexer(chars);
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new storkParser(tokens);
             var tree = parser.compileUnit();
-
-            //Printing debug string.
-            Console.WriteLine("ANTLR Debug Parse:");
-            Console.WriteLine(tree.ToInfoString(parser));
-            Console.WriteLine("");
 
             //Printing parse tree.
             Console.WriteLine("ANTLR Parse Tree:");
-            Console.WriteLine(tree.ToStringTree());
-            Console.WriteLine(tree.block().statement().Length);
+            Console.WriteLine(tree.ToStringTree(parser));
+            Console.WriteLine("Total Statements: "+tree.block().statement().Length+"\n");
+        }
+
+        //Returns the whole Stork tree.
+        public static storkParser.CompileUnitContext GetTree(string testString)
+        {
+            var chars = new AntlrInputStream(testString);
+            var lexer = new storkLexer(chars);
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new storkParser(tokens);
+            return parser.compileUnit();
         }
     }
 }

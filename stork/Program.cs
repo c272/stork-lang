@@ -12,25 +12,20 @@ namespace stork
         static void Main(string[] args)
         {
             //Test input string.
-            string input = "int banana = 142;";
-            var chars = new AntlrInputStream(input);
-            var lexer = new storkLexer(chars);
-            var tokens = new CommonTokenStream(lexer);
+            string input = "int banana = 12.123;";
 
             //Debug print.
-            ANTLRDebug.PrintTokens(lexer);
+            ANTLRDebug.PrintTokens(input);
 
             //Debug print tree.
-            var parser = new storkParser(tokens);
-            ANTLRDebug.PrintParseList(parser);
+            ANTLRDebug.PrintParseList(input);
 
             //Getting tree.
-            parser.BuildParseTree = true;
-            var tree = parser.compileUnit();
+            var tree = ANTLRDebug.GetTree(input);
 
             //Starting the walk.
-           // var visitor = new storkVisitor();
-           // visitor.VisitCompileUnit(tree);
+            var visitor = new storkVisitor();
+            visitor.VisitCompileUnit(tree);
         }
     }
 }
