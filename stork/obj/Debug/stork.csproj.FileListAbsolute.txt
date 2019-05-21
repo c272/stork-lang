@@ -1,0 +1,16 @@
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\stork.csproj.CoreCompileInputs.cache
+D:\Files\Programming\GitHub\stork\stork\bin\Debug\stork.exe.config
+D:\Files\Programming\GitHub\stork\stork\bin\Debug\stork.exe
+D:\Files\Programming\GitHub\stork\stork\bin\Debug\stork.pdb
+D:\Files\Programming\GitHub\stork\stork\bin\Debug\Antlr4.Runtime.dll
+D:\Files\Programming\GitHub\stork\stork\bin\Debug\Antlr4.Runtime.xml
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\stork.csproj.CopyComplete
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\stork.exe
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\stork.pdb
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkLexer.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkParser.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkListener.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkBaseListener.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkVisitor.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkBaseVisitor.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\stork.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
