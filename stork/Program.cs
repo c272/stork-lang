@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Antlr4.Runtime;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Antlr4;
-using Antlr4.Runtime;
-using stork.Grammars;
 
 namespace stork
 {
@@ -25,14 +23,14 @@ namespace stork
             //Debug print tree.
             var parser = new storkParser(tokens);
             ANTLRDebug.PrintParseList(parser);
-            
+
             //Getting tree.
             parser.BuildParseTree = true;
             var tree = parser.compileUnit();
 
             //Starting the walk.
-            var visitor = new storkVisitor();
-            visitor.VisitCompileUnit(tree);
+           // var visitor = new storkVisitor();
+           // visitor.VisitCompileUnit(tree);
         }
     }
 }

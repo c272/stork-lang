@@ -1,23 +1,57 @@
-grammar Stork;
+grammar stork;
 
 /*
- * Parsing Rules
+ * Parser Rules
  */
- 
- 
- 
+
+ //The final compile unit sent to the interpreter.
+compileUnit
+	: block	EOF
+	;
+
+//A block, array of statements.
+block: statement*
+	 ;
+
+//A single statement.
+statement: stat_ass;
+
+stat_ass: IDENTIFIER IDENTIFIER SET_EQUALS value ENDLINE;
+
+//An expression that can contain a value.
+value:   INTEGER
+	   | FLOAT
+	   | STRING
+	   | IDENTIFIER;
+
 /*
- * Lexing Rules
+ * Lexer Rules
  */
 
-//String literal, must start and end with a quote.
-STRING : '"' .*? '"'
+//Integer. Any combination of whole numbers, starting with non-zero.
+INTEGER: [1-9] [0-9]* | '0'
+       ;
 
-//Can be negative, use numbers 0-9, must include a ".".
-FLOAT : [-]? [0-9]+ '.' [0-9]+;
+//Float. Two integers separated by a '.'.
+FLOAT: INTEGER '.' INTEGER
+     ;
 
-//Can be negative, use numbers 0-9.
-INTEGER : [-]? [0-9]+;
+//String.
+STRING: QUOTE (~["])* QUOTE
+	  ;
 
-//Any spaces, tabs, newlines, carriage returns, skip.
-WHITESPACE : [ \t\r\n]+ -> skip ;
+// CONSTANT SYMBOLS!
+QUOTE: '"';
+ENDLINE: ';';
+SET_EQUALS: '=';
+
+//Identifier, should be a last resort.
+IDENTIFIER: [A-Za-z_] [A-Za-z_0-9]*;
+
+//Skip all unnecessary whitespace.
+WS
+	: [ \n\t] -> skip
+	;
+
+//Unknown symbol.
+UNKNOWN_SYMBOL: .;

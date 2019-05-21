@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4;
 using Antlr4.Runtime;
-using stork.Grammars;
 
 namespace stork
 {
-    public static  class ANTLRDebug
+    public static class ANTLRDebug
     {
         public static void PrintTokens(Lexer lexer)
         {
@@ -25,13 +24,13 @@ namespace stork
             {
                 Console.WriteLine("[" + vocab.GetSymbolicName(tok.Type) + ", " + tok.Text + ", channel=" + tok.Channel + "]");
             }
+            Console.WriteLine("");
         }
 
         public static void PrintParseList(storkParser parser)
         {
             parser.BuildParseTree = true;
             var tree = parser.compileUnit();
-            Console.WriteLine(parser.statement().GetText());
 
             //Printing debug string.
             Console.WriteLine("ANTLR Debug Parse:");
@@ -41,6 +40,7 @@ namespace stork
             //Printing parse tree.
             Console.WriteLine("ANTLR Parse Tree:");
             Console.WriteLine(tree.ToStringTree());
+            Console.WriteLine(tree.block().statement().Length);
         }
     }
 }

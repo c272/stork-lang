@@ -1,4 +1,4 @@
-﻿namespace stork.Grammars
+﻿namespace stork
 {
     partial class storkParser
     {

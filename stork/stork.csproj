@@ -5,14 +5,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CC10B0DF-D889-4368-917D-E900600F9B15}</ProjectGuid>
+    <ProjectGuid>{8848094E-97D1-4E36-8C0E-F19A9EBB979B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>stork</RootNamespace>
     <AssemblyName>stork</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -50,23 +49,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ANTLRDebug.cs" />
-    <Compile Include="Grammars\stork.g4.lexer.cs">
-      <DependentUpon>stork.g4</DependentUpon>
-    </Compile>
-    <Compile Include="Grammars\stork.g4.parser.cs">
-      <DependentUpon>stork.g4</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="stork.g4.lexer.cs">
+      <DependentUpon>stork.g4</DependentUpon>
+    </Compile>
+    <Compile Include="stork.g4.parser.cs">
+      <DependentUpon>stork.g4</DependentUpon>
+    </Compile>
     <Compile Include="storkVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Antlr4 Include="Grammars\stork.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>stork.Grammars</CustomToolNamespace>
-    </Antlr4>
     <None Include="packages.config" />
+    <Antlr4 Include="stork.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>stork</CustomToolNamespace>
+    </Antlr4>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
