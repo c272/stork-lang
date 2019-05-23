@@ -39,6 +39,14 @@ namespace stork
             return Scopes[index];
         }
 
+        //Returns all variables.
+        public Dictionary<string, StorkValue> GetVariables()
+        {
+            //Concatenate all scopes together.
+            return Scopes.SelectMany(dict => dict)
+                         .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
         //Gets a variable of a given name from the deepest index.
         public StorkValue GetVariable(string name)
         {
@@ -70,17 +78,25 @@ namespace stork
             }
         }
 
-        //Craetes a variable at the current deepest scope.
-        public void CreateVariable(string name, object value)
+        //Craetes a variable at the current deepest scope. Returns success as bool.
+        public bool CreateVariable(string name, object value, StorkType type)
         {
             //Checking if the variable already exists.
-            //...
+            if (!GetVariable(name).Equals(default(StorkValue)))
+            {
+                //Value already exists.
+                return false;
+            }
 
             //Adding to scope.
             Scopes.Last().Add(name, new StorkValue()
             {
-
+                Type = type,
+                Value = value
             });
+
+            //Returning success.
+            return true;
         }
     }
 }

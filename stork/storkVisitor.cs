@@ -42,17 +42,17 @@ namespace stork
         public override object VisitStatement([NotNull] storkParser.StatementContext context)
         {
             //Check what type of statement it is.
-            if (!context.stat_assign().IsEmpty)
+            if (context.stat_assign()!=null)
             {
                 //A variable assign statement.
                 VisitStat_assign(context.stat_assign());
             }
-            else if (!context.stat_define().IsEmpty)
+            else if (context.stat_define()!=null)
             {
                 //A variable define statement.
                 VisitStat_define(context.stat_define());
             }
-            else if (!context.stat_functionCall().IsEmpty)
+            else if (context.stat_functionCall()!=null)
             {
                 //A function call statement.
                 VisitStat_functionCall(context.stat_functionCall());
@@ -78,7 +78,7 @@ namespace stork
             var value = (StorkValue)VisitExpr(context.expr());
 
             //Check if the types are the same.
-            if (value.Type != identiValue.Type)
+            if (value.Type.Name != identiValue.Type.Name)
             {
                 //Not the same, error and notify user.
                 Console.WriteLine("Stork Runtime Error: The variable \"" + context.IDENTIFIER().GetText() + "\" has type " + identiValue.Type.ToString() + ", but you tried to assign it a type of " + value.Type.ToString() + ".");
@@ -98,19 +98,26 @@ namespace stork
             var identiValue = scope.GetVariable(context.varname.Text);
             if (!identiValue.Equals(default(StorkValue)))
             {
-                //Variable doesn't exist. Provide a detailed and simple error message.
+                //Variable exists already. Provide a detailed and simple error message.
                 Console.WriteLine("Stork Runtime Error: You tried to create a variable \"" + context.varname.Text + "\", but it already exists in scope.");
                 Environment.Exit(0);
             }
 
             //Check if the type of variable is valid.
-
+            var varType = types.GetTypeByShortname(context.vartype.Text);
+            if (varType.Equals(default(StorkType)))
+            {
+                //Type is invalid.
+                Console.WriteLine("Stork Runtime Error: The type you provided while creating variable " + context.varname.Text + ", \"" + context.vartype.Text + "\", doesn't exist.");
+                Environment.Exit(0);
+            }
 
             //Variable does exist, get the value to assign.
-            var value = (StorkValue)VisitExpr(context.expr());
+            //Temporarily disabled value fetching.
+            var value = new StorkValue() { Type = types.GetTypeByShortname("int"), Value = 3 }; //(StorkValue)VisitExpr(context.expr());
 
             //They are, now set the value.
-            scope.CreateVariable(context.varname.Text, value.Value);
+            scope.CreateVariable(context.varname.Text, value.Value, varType);
 
             return null;
         }
