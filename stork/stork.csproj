@@ -57,6 +57,9 @@
     <Compile Include="stork.g4.parser.cs">
       <DependentUpon>stork.g4</DependentUpon>
     </Compile>
+    <Compile Include="StorkScope.cs" />
+    <Compile Include="StorkType.cs" />
+    <Compile Include="StorkTypeCollection.cs" />
     <Compile Include="StorkValue.cs" />
     <Compile Include="storkVisitor.cs" />
   </ItemGroup>

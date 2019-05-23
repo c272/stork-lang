@@ -1,6 +1,6 @@
-Z:\VSProjects\stork\stork-lang\stork\obj\Debug\storkLexer.cs
-Z:\VSProjects\stork\stork-lang\stork\obj\Debug\storkParser.cs
-Z:\VSProjects\stork\stork-lang\stork\obj\Debug\storkListener.cs
-Z:\VSProjects\stork\stork-lang\stork\obj\Debug\storkBaseListener.cs
-Z:\VSProjects\stork\stork-lang\stork\obj\Debug\storkVisitor.cs
-Z:\VSProjects\stork\stork-lang\stork\obj\Debug\storkBaseVisitor.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkLexer.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkParser.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkListener.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkBaseListener.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkVisitor.cs
+D:\Files\Programming\GitHub\stork\stork\obj\Debug\storkBaseVisitor.cs

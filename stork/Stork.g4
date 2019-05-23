@@ -33,7 +33,7 @@ expr: value |
 // STATEMENT TYPES
 
 //A single variable definition/assignment.
-stat_define: IDENTIFIER IDENTIFIER EQUALS expr;
+stat_define: vartype=IDENTIFIER varname=IDENTIFIER EQUALS expr;
 stat_assign: IDENTIFIER EQUALS expr;
 
 //A single function call.
