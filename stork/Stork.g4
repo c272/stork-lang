@@ -35,7 +35,7 @@ expr: value |
 
 //A single variable definition/assignment.
 stat_define: vartype=IDENTIFIER varname=IDENTIFIER EQUALS expr;
-stat_assign: IDENTIFIER EQUALS expr;
+stat_assign: object_reference EQUALS expr;
 
 //A single function call.
 stat_functionCall: IDENTIFIER LBRACKET params? RBRACKET;
@@ -49,7 +49,8 @@ stat_functionDef: FUNCDEF_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
 // MID LEVEL CONSTRUCTS
 
 //An object reference, eg. "foo.bar().somefield"
-object_reference: ((IDENTIFIER | stat_functionCall) POINT)* IDENTIFIER;
+object_reference: (object_subreference POINT)* object_subreference;
+object_subreference: (IDENTIFIER | stat_functionCall);
 
 //Value, a thing that contains value in Stork.
 value: INTEGER 

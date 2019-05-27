@@ -47,6 +47,50 @@ namespace stork
                 DirectValueType = typeof(int),
                 Name = "Stork.Boolean"
             });
+
+            //Wildcard (any class) class.
+            Classes.Add("val", new StorkClass()
+            {
+                CanDirectAssign = false,
+                Name = "Stork.Wildcard"
+            });
+
+            //Test class "c". Contains an integer "d".
+            Classes.Add("c", new StorkClass()
+            {
+                CanDirectAssign = false,
+                Name = "Stork.TestClass.C",
+                StaticFields = new Dictionary<string, StorkClass>()
+                {
+                    {"d", Classes["int"] } //integer
+                }
+                
+            });
+
+            //Creating the static instances.
+            Classes["c"].ReloadStaticInstance();
+        }
+
+        //Creates an instance of a class given a class name and value.
+        public Tuple<bool, string, StorkClassInstance> CreateInstanceDV(string className, object value)
+        {
+            //Getting the relevant class template.
+            var classTemplate = GetClass(className);
+            if (classTemplate == null)
+            {
+                return new Tuple<bool, string, StorkClassInstance>(false, "Invalid internal class name, contact developer.", null);
+            }
+
+            //Checking the type is DirectValue enabled.
+            if (!classTemplate.CanDirectAssign)
+            {
+                return new Tuple<bool, string, StorkClassInstance>(false, "Cannot use operators/create direct value instances from a class that has direct values disabled.", null);
+            }
+
+            //Return a new instance of the template.
+            var instance = classTemplate.CreateInstance();
+            instance.DirectValue = value;
+            return new Tuple<bool, string, StorkClassInstance>(true, "", instance);
         }
 
         //Add a class to the list.
@@ -64,7 +108,7 @@ namespace stork
             }
             catch
             {
-                return default(StorkClass);
+                return null;
             }
         }
     }

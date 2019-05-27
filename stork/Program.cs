@@ -12,7 +12,7 @@ namespace stork
         static void Main(string[] args)
         {
             //Test input string.
-            string input = "int b = c.d.e.f.gamr().oof; gamer();";
+            string input = "c.d = 213; print(c.d);";
 
             //Debug print.
             ANTLRDebug.PrintTokens(input);
@@ -24,8 +24,8 @@ namespace stork
             var tree = ANTLRDebug.GetTree(input);
 
             //Starting the walk.
-           // var visitor = new storkVisitor();
-            //visitor.VisitCompileUnit(tree);
+            var visitor = new storkVisitor();
+            visitor.VisitCompileUnit(tree);
 
             //Logging variables at end of runtime.
             

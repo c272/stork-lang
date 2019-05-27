@@ -12,6 +12,18 @@ namespace stork
         //The list of functions.
         private Dictionary<string, StorkFunction> Functions = new Dictionary<string, StorkFunction>();
 
+        //Constructor for test functions.
+        public StorkFunctionCollection()
+        {
+            Functions.Add("print", new StorkFunction(
+                StorkTestFunctions.Print,
+                new Dictionary<string, StorkClass>()
+                {
+                    {"toPrint", storkVisitor.Classes.GetClass("val") }
+                }
+            ));
+        }
+
         //Add a function.
         public Tuple<bool, string> AddFunction(string name, List<storkParser.StatementContext> body, Dictionary<string, StorkClass> params_)
         {

@@ -65,6 +65,7 @@
     <Compile Include="StorkFunctionCollection.cs" />
     <Compile Include="StorkOperators.cs" />
     <Compile Include="StorkScope.cs" />
+    <Compile Include="StorkTestFunctions.cs" />
     <Compile Include="storkVisitor.cs" />
     <Compile Include="storkVisitorExpressions.cs" />
   </ItemGroup>

@@ -27,6 +27,9 @@ namespace stork
         public Dictionary<string, StorkClass> StaticFields;
         public Dictionary<string, StorkClass> InstanceFields;
 
+        //The static class instance containing the fields, methods, etc.
+        public StorkClassInstance StaticInstance;
+
         ///////////////////
         ///STORK METHODS///
         ///////////////////
@@ -34,11 +37,15 @@ namespace stork
         //Default constructor which initializes lists.
         public StorkClass()
         {
+            //Initialize lists.
             StaticFields = new Dictionary<string, StorkClass>();
             StaticMethods = new Dictionary<string, StorkFunction>();
             InstanceFields = new Dictionary<string, StorkClass>();
             InstanceMethods = new Dictionary<string, StorkFunction>();
             DirectValue = null;
+
+            //Creating the static instance.
+            ReloadStaticInstance();
         }
 
         //Creates an instance of this class template to be used.
@@ -58,6 +65,27 @@ namespace stork
                 InstanceFields = fieldInstances,
                 InstanceMethods = InstanceMethods,
                 TypeName = Name
+            };
+        }
+
+        //Refreshes the static instance in the class.
+        public void ReloadStaticInstance()
+        {
+            //Creating the static instance.
+            var fields = new Dictionary<string, StorkClassInstance>();
+            foreach (var field in StaticFields)
+            {
+                fields.Add(field.Key, field.Value.CreateInstance());
+            }
+
+            StaticInstance = new StorkClassInstance()
+            {
+                CanDirectAssign = CanDirectAssign,
+                DirectValue = DirectValue,
+                DirectValueType = DirectValueType,
+                InstanceFields = fields,
+                InstanceMethods = StaticMethods,
+                TypeName = Name + "_static"
             };
         }
     }

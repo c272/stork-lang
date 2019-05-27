@@ -131,6 +131,17 @@ public interface IstorkListener : IParseTreeListener {
 	void ExitObject_reference([NotNull] storkParser.Object_referenceContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.object_subreference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterObject_subreference([NotNull] storkParser.Object_subreferenceContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.object_subreference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitObject_subreference([NotNull] storkParser.Object_subreferenceContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

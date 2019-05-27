@@ -96,6 +96,13 @@ public interface IstorkVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitObject_reference([NotNull] storkParser.Object_referenceContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.object_subreference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitObject_subreference([NotNull] storkParser.Object_subreferenceContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="storkParser.value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

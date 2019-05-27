@@ -15,12 +15,15 @@ namespace stork
         //The list of parameters.
         public Dictionary<string, StorkClass> Parameters = new Dictionary<string, StorkClass>();
 
-        //Constructors for internal and custom.
-        public StorkFunction(InternalFunctionDelegate internalFuncRef)
+        //Constructors for internal and custom functions.
+        //INTERNAL
+        public StorkFunction(InternalFunctionDelegate internalFuncRef, Dictionary<string, StorkClass> parameters)
         {
             Internal = internalFuncRef;
+            Parameters = parameters;
         }
 
+        //USER-DEFINED
         public StorkFunction(List<storkParser.StatementContext> funcBody, Dictionary<string, StorkClass> parameters)
         {
             StatementBody = funcBody;
@@ -29,5 +32,5 @@ namespace stork
     }
 
     //Delegate for internal functions.
-    public delegate StorkClassInstance InternalFunctionDelegate(StorkClassInstance[] args);
+    public delegate StorkClassInstance InternalFunctionDelegate(List<StorkClassInstance> args);
 }

@@ -12,6 +12,7 @@ namespace stork
         public static void Print(string errorMsg)
         {
             Console.WriteLine("Stork Runtime Error: " + errorMsg);
+            Environment.Exit(0);
         }
     }
 }

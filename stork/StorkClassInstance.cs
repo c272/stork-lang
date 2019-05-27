@@ -17,5 +17,18 @@ namespace stork
         //Instance methods and fields.
         public Dictionary<string, StorkFunction> InstanceMethods;
         public Dictionary<string, StorkClassInstance> InstanceFields;
+
+        //Gets a specific instance-only field.
+        public StorkClassInstance GetField(string fieldName)
+        {
+            try
+            {
+                return InstanceFields[fieldName];
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

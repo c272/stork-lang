@@ -153,6 +153,19 @@ public partial class storkBaseListener : IstorkListener {
 	public virtual void ExitObject_reference([NotNull] storkParser.Object_referenceContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.object_subreference"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterObject_subreference([NotNull] storkParser.Object_subreferenceContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.object_subreference"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitObject_subreference([NotNull] storkParser.Object_subreferenceContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.value"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
