@@ -57,11 +57,16 @@
     <Compile Include="stork.g4.parser.cs">
       <DependentUpon>stork.g4</DependentUpon>
     </Compile>
+    <Compile Include="StorkClass.cs" />
+    <Compile Include="StorkClassCollection.cs" />
+    <Compile Include="StorkClassInstance.cs" />
+    <Compile Include="StorkError.cs" />
+    <Compile Include="StorkFunction.cs" />
+    <Compile Include="StorkFunctionCollection.cs" />
+    <Compile Include="StorkOperators.cs" />
     <Compile Include="StorkScope.cs" />
-    <Compile Include="StorkType.cs" />
-    <Compile Include="StorkTypeCollection.cs" />
-    <Compile Include="StorkValue.cs" />
     <Compile Include="storkVisitor.cs" />
+    <Compile Include="storkVisitorExpressions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

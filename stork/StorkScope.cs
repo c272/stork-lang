@@ -1,101 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace stork
 {
-    //Utility class for a collection of scopes in Stork.
-    public class StorkScopeCollection
+    public class StorkScope
     {
-        //A list of all the current scopes.
-        private List<Dictionary<string, StorkValue>> Scopes = new List<Dictionary<string, StorkValue>>();
-        public StorkScopeCollection()
+        //List of all current scopes.
+        public List<Dictionary<string, StorkClassInstance>> Scopes = new List<Dictionary<string, StorkClassInstance>>();
+
+        //Constructor, adds the default highest scope.
+        public StorkScope()
         {
-            //Add the global scope.
-            Scopes.Add(new Dictionary<string, StorkValue>());
+            Scopes.Add(new Dictionary<string, StorkClassInstance>());
         }
 
-        //Create a new scope and return its index.
-        public int CreateScope()
+        //Attempts to find a given variable, starting at the deepest scope.
+        public StorkClassInstance GetVariable(string name)
         {
-            //Add a new scope to the list.
-            Scopes.Add(new Dictionary<string, StorkValue>());
-
-            //Return the index of this new scope.
-            return Scopes.Count - 1;
-        }
-
-        //Get the current deepest scope.
-        public Dictionary<string, StorkValue> GetCurrentScope()
-        {
-            if (Scopes.Count == 0) { return null; }
-            return Scopes.Last();
-        }
-
-        //Get a scope with a given index.
-        public Dictionary<string, StorkValue> GetScope(int index)
-        {
-            if (index < 0) { return null; }
-            return Scopes[index];
-        }
-
-        //Returns all variables.
-        public Dictionary<string, StorkValue> GetVariables()
-        {
-            //Concatenate all scopes together.
-            return Scopes.SelectMany(dict => dict)
-                         .ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
-
-        //Gets a variable of a given name from the deepest index.
-        public StorkValue GetVariable(string name)
-        {
-            //Start at the deepest local scope!
-            for (int i=Scopes.Count-1; i>=0; i--)
+            for (int i = Scopes.Count - 1; i >= 0; i--)
             {
                 if (Scopes[i].ContainsKey(name))
                 {
                     return Scopes[i][name];
                 }
             }
-            
+
             //Not found, return null.
-            return default(StorkValue);
+            return null;
         }
 
-        //Sets a variable of a given name at the deepest found index.
-        public void SetVariable(string name, object value)
+        //Adds a new variable to the deepest scope. Returns tuple of success/error message.
+        public Tuple<bool, string> AddVariable(string name, StorkClassInstance value)
         {
-            //Start at the deepest local scope!
-            for (int i = Scopes.Count - 1; i >= 0; i--)
+            //If the variable already exists, error and return.
+            if (GetVariable(name)!=null)
             {
-                if (Scopes[i].ContainsKey(name))
-                {
-                    //Set the value.
-                    Scopes[i][name] = new StorkValue() { Type = Scopes[i][name].Type, Value = value };
-                    return;
-                }
+                return new Tuple<bool, string>(false, "This variable already exists in scope.");
             }
+
+            //Add to deepest scope.
+            Scopes.Last().Add(name, value);
+            return new Tuple<bool, string>(true, "");
         }
 
-        //Craetes a variable at the current deepest scope. Returns success as bool.
-        public bool CreateVariable(string name, object value, StorkType type)
+        //Adds a new scope at the deepest level.
+        public void AddScope()
         {
-            //Checking if the variable already exists.
-            if (!GetVariable(name).Equals(default(StorkValue)))
+            Scopes.Add(new Dictionary<string, StorkClassInstance>());
+        }
+
+        //Removes the lowest scope.
+        public bool RemoveScope()
+        {
+            //Can't remove the highest scope, otherwise environment is closed.
+            if (Scopes.Count<=1)
             {
-                //Value already exists.
                 return false;
             }
 
-            //Adding to scope.
-            Scopes.Last().Add(name, new StorkValue()
-            {
-                Type = type,
-                Value = value
-            });
-
-            //Returning success.
+            //Remove last.
+            Scopes.RemoveAt(Scopes.Count - 1);
             return true;
         }
     }

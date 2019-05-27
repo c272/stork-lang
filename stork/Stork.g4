@@ -17,7 +17,8 @@ block: statement*
 
 statement: ( stat_define
 		   | stat_assign
-		   | stat_functionCall)
+		   | stat_functionCall
+		   | stat_functionDef )
 			 ENDLINE
 		   ;
 
@@ -39,19 +40,30 @@ stat_assign: IDENTIFIER EQUALS expr;
 //A single function call.
 stat_functionCall: IDENTIFIER LBRACKET params? RBRACKET;
 
+//A single function definition.
+stat_functionDef: FUNCDEF_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
+				  LBRACE
+					statement*
+				  RBRACE;
 
 // MID LEVEL CONSTRUCTS
+
+//An object reference, eg. "foo.bar().somefield"
+object_reference: ((IDENTIFIER | stat_functionCall) POINT)* IDENTIFIER;
 
 //Value, a thing that contains value in Stork.
 value: INTEGER 
 	   | FLOAT 
 	   | BOOLEAN 
-	   | STRING 
-	   | IDENTIFIER
+	   | STRING
+	   | object_reference
 	   | stat_functionCall;
 
 //A generic list of parameters.
 params: (expr COMMA)* expr;
+
+//A list of function parameters.
+funcdefparams: (IDENTIFIER IDENTIFIER COMMA)* IDENTIFIER IDENTIFIER;
 
 //An infix operator.
 operator: ADD_OP
@@ -115,6 +127,9 @@ RBRACKET: ')';
 LBRACE: '{';
 RBRACE: '}';
 EQUALS: '=';
+FUNCDEF_SYM: 'func';
+IF_SYM: 'if';
+ELSE_SYM: 'else';
 
 //////////////////////
 

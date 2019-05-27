@@ -127,6 +127,32 @@ public partial class storkBaseListener : IstorkListener {
 	public virtual void ExitStat_functionCall([NotNull] storkParser.Stat_functionCallContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.stat_functionDef"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStat_functionDef([NotNull] storkParser.Stat_functionDefContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.stat_functionDef"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStat_functionDef([NotNull] storkParser.Stat_functionDefContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.object_reference"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterObject_reference([NotNull] storkParser.Object_referenceContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.object_reference"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitObject_reference([NotNull] storkParser.Object_referenceContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.value"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -151,6 +177,19 @@ public partial class storkBaseListener : IstorkListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitParams([NotNull] storkParser.ParamsContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.funcdefparams"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFuncdefparams([NotNull] storkParser.FuncdefparamsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.funcdefparams"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFuncdefparams([NotNull] storkParser.FuncdefparamsContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.operator"/>.

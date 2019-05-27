@@ -82,6 +82,20 @@ public interface IstorkVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitStat_functionCall([NotNull] storkParser.Stat_functionCallContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.stat_functionDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStat_functionDef([NotNull] storkParser.Stat_functionDefContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.object_reference"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitObject_reference([NotNull] storkParser.Object_referenceContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="storkParser.value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -94,6 +108,13 @@ public interface IstorkVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitParams([NotNull] storkParser.ParamsContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.funcdefparams"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFuncdefparams([NotNull] storkParser.FuncdefparamsContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="storkParser.operator"/>.

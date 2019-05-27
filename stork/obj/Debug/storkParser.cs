@@ -35,28 +35,31 @@ public partial class storkParser : Parser {
 		DIV_OP=8, EQUALS_OP=9, GREATER_OR_EQUALS_OP=10, LESS_OR_EQUALS_OP=11, 
 		GREATER_OP=12, LESS_OP=13, INCREMENT_POSTFIX_OP=14, DECREMENT_POSTFIX_OP=15, 
 		ADDTO_OP=16, TAKEFROM_OP=17, POINT=18, ENDLINE=19, COMMA=20, QUOTE=21, 
-		LBRACKET=22, RBRACKET=23, LBRACE=24, RBRACE=25, EQUALS=26, IDENTIFIER=27, 
-		WS=28, UNKNOWN_SYMBOL=29, DECREMEMT_POSTFIX_OP=30;
+		LBRACKET=22, RBRACKET=23, LBRACE=24, RBRACE=25, EQUALS=26, FUNCDEF_SYM=27, 
+		IF_SYM=28, ELSE_SYM=29, IDENTIFIER=30, WS=31, UNKNOWN_SYMBOL=32, DECREMEMT_POSTFIX_OP=33;
 	public const int
 		RULE_compileUnit = 0, RULE_block = 1, RULE_statement = 2, RULE_expr = 3, 
 		RULE_stat_define = 4, RULE_stat_assign = 5, RULE_stat_functionCall = 6, 
-		RULE_value = 7, RULE_params = 8, RULE_operator = 9, RULE_postfix_op = 10;
+		RULE_stat_functionDef = 7, RULE_object_reference = 8, RULE_value = 9, 
+		RULE_params = 10, RULE_funcdefparams = 11, RULE_operator = 12, RULE_postfix_op = 13;
 	public static readonly string[] ruleNames = {
 		"compileUnit", "block", "statement", "expr", "stat_define", "stat_assign", 
-		"stat_functionCall", "value", "params", "operator", "postfix_op"
+		"stat_functionCall", "stat_functionDef", "object_reference", "value", 
+		"params", "funcdefparams", "operator", "postfix_op"
 	};
 
 	private static readonly string[] _LiteralNames = {
 		null, null, null, null, null, "'+'", "'-'", "'*'", "'/'", "'=='", "'>='", 
 		"'<='", "'>'", "'<'", "'++'", "'--'", "'+='", "'-='", "'.'", "';'", "','", 
-		"'\"'", "'('", "')'", "'{'", "'}'", "'='"
+		"'\"'", "'('", "')'", "'{'", "'}'", "'='", "'func'", "'if'", "'else'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "INTEGER", "FLOAT", "BOOLEAN", "STRING", "ADD_OP", "TAKE_OP", "MUL_OP", 
 		"DIV_OP", "EQUALS_OP", "GREATER_OR_EQUALS_OP", "LESS_OR_EQUALS_OP", "GREATER_OP", 
 		"LESS_OP", "INCREMENT_POSTFIX_OP", "DECREMENT_POSTFIX_OP", "ADDTO_OP", 
 		"TAKEFROM_OP", "POINT", "ENDLINE", "COMMA", "QUOTE", "LBRACKET", "RBRACKET", 
-		"LBRACE", "RBRACE", "EQUALS", "IDENTIFIER", "WS", "UNKNOWN_SYMBOL", "DECREMEMT_POSTFIX_OP"
+		"LBRACE", "RBRACE", "EQUALS", "FUNCDEF_SYM", "IF_SYM", "ELSE_SYM", "IDENTIFIER", 
+		"WS", "UNKNOWN_SYMBOL", "DECREMEMT_POSTFIX_OP"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -140,8 +143,8 @@ public partial class storkParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 22; block();
-			State = 23; Match(Eof);
+			State = 28; block();
+			State = 29; Match(Eof);
 			}
 		}
 		catch (RecognitionException re) {
@@ -190,16 +193,16 @@ public partial class storkParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 28;
+			State = 34;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
-			while (_la==IDENTIFIER) {
+			while (_la==FUNCDEF_SYM || _la==IDENTIFIER) {
 				{
 				{
-				State = 25; statement();
+				State = 31; statement();
 				}
 				}
-				State = 30;
+				State = 36;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
@@ -226,6 +229,9 @@ public partial class storkParser : Parser {
 		}
 		public Stat_functionCallContext stat_functionCall() {
 			return GetRuleContext<Stat_functionCallContext>(0);
+		}
+		public Stat_functionDefContext stat_functionDef() {
+			return GetRuleContext<Stat_functionDefContext>(0);
 		}
 		public StatementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -254,28 +260,34 @@ public partial class storkParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 34;
+			State = 41;
 			_errHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
-				State = 31; stat_define();
+				State = 37; stat_define();
 				}
 				break;
 
 			case 2:
 				{
-				State = 32; stat_assign();
+				State = 38; stat_assign();
 				}
 				break;
 
 			case 3:
 				{
-				State = 33; stat_functionCall();
+				State = 39; stat_functionCall();
+				}
+				break;
+
+			case 4:
+				{
+				State = 40; stat_functionDef();
 				}
 				break;
 			}
-			State = 36; Match(ENDLINE);
+			State = 43; Match(ENDLINE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -345,7 +357,7 @@ public partial class storkParser : Parser {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 44;
+			State = 51;
 			_errHandler.Sync(this);
 			switch (_input.La(1)) {
 			case INTEGER:
@@ -354,21 +366,21 @@ public partial class storkParser : Parser {
 			case STRING:
 			case IDENTIFIER:
 				{
-				State = 39; value();
+				State = 46; value();
 				}
 				break;
 			case LBRACKET:
 				{
-				State = 40; Match(LBRACKET);
-				State = 41; value();
-				State = 42; Match(RBRACKET);
+				State = 47; Match(LBRACKET);
+				State = 48; value();
+				State = 49; Match(RBRACKET);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.Lt(-1);
-			State = 54;
+			State = 61;
 			_errHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(_input,4,_ctx);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.InvalidAltNumber ) {
@@ -376,7 +388,7 @@ public partial class storkParser : Parser {
 					if ( _parseListeners!=null ) TriggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					State = 52;
+					State = 59;
 					_errHandler.Sync(this);
 					switch ( Interpreter.AdaptivePredict(_input,3,_ctx) ) {
 					case 1:
@@ -384,10 +396,10 @@ public partial class storkParser : Parser {
 						_localctx = new ExprContext(_parentctx, _parentState);
 						_localctx.lexpr = _prevctx;
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 46;
+						State = 53;
 						if (!(Precpred(_ctx, 2))) throw new FailedPredicateException(this, "Precpred(_ctx, 2)");
-						State = 47; @operator();
-						State = 48; _localctx.rexpr = expr(3);
+						State = 54; @operator();
+						State = 55; _localctx.rexpr = expr(3);
 						}
 						break;
 
@@ -395,15 +407,15 @@ public partial class storkParser : Parser {
 						{
 						_localctx = new ExprContext(_parentctx, _parentState);
 						PushNewRecursionContext(_localctx, _startState, RULE_expr);
-						State = 50;
+						State = 57;
 						if (!(Precpred(_ctx, 1))) throw new FailedPredicateException(this, "Precpred(_ctx, 1)");
-						State = 51; postfix_op();
+						State = 58; postfix_op();
 						}
 						break;
 					}
 					} 
 				}
-				State = 56;
+				State = 63;
 				_errHandler.Sync(this);
 				_alt = Interpreter.AdaptivePredict(_input,4,_ctx);
 			}
@@ -458,10 +470,10 @@ public partial class storkParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 57; _localctx.vartype = Match(IDENTIFIER);
-			State = 58; _localctx.varname = Match(IDENTIFIER);
-			State = 59; Match(EQUALS);
-			State = 60; expr(0);
+			State = 64; _localctx.vartype = Match(IDENTIFIER);
+			State = 65; _localctx.varname = Match(IDENTIFIER);
+			State = 66; Match(EQUALS);
+			State = 67; expr(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -508,9 +520,9 @@ public partial class storkParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 62; Match(IDENTIFIER);
-			State = 63; Match(EQUALS);
-			State = 64; expr(0);
+			State = 69; Match(IDENTIFIER);
+			State = 70; Match(EQUALS);
+			State = 71; expr(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -559,18 +571,190 @@ public partial class storkParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 66; Match(IDENTIFIER);
-			State = 67; Match(LBRACKET);
-			State = 69;
+			State = 73; Match(IDENTIFIER);
+			State = 74; Match(LBRACKET);
+			State = 76;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << INTEGER) | (1L << FLOAT) | (1L << BOOLEAN) | (1L << STRING) | (1L << LBRACKET) | (1L << IDENTIFIER))) != 0)) {
 				{
-				State = 68; @params();
+				State = 75; @params();
 				}
 			}
 
-			State = 71; Match(RBRACKET);
+			State = 78; Match(RBRACKET);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class Stat_functionDefContext : ParserRuleContext {
+		public ITerminalNode FUNCDEF_SYM() { return GetToken(storkParser.FUNCDEF_SYM, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(storkParser.IDENTIFIER, 0); }
+		public ITerminalNode LBRACKET() { return GetToken(storkParser.LBRACKET, 0); }
+		public ITerminalNode RBRACKET() { return GetToken(storkParser.RBRACKET, 0); }
+		public ITerminalNode LBRACE() { return GetToken(storkParser.LBRACE, 0); }
+		public ITerminalNode RBRACE() { return GetToken(storkParser.RBRACE, 0); }
+		public FuncdefparamsContext funcdefparams() {
+			return GetRuleContext<FuncdefparamsContext>(0);
+		}
+		public StatementContext[] statement() {
+			return GetRuleContexts<StatementContext>();
+		}
+		public StatementContext statement(int i) {
+			return GetRuleContext<StatementContext>(i);
+		}
+		public Stat_functionDefContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_stat_functionDef; } }
+		public override void EnterRule(IParseTreeListener listener) {
+			IstorkListener typedListener = listener as IstorkListener;
+			if (typedListener != null) typedListener.EnterStat_functionDef(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IstorkListener typedListener = listener as IstorkListener;
+			if (typedListener != null) typedListener.ExitStat_functionDef(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IstorkVisitor<TResult> typedVisitor = visitor as IstorkVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitStat_functionDef(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public Stat_functionDefContext stat_functionDef() {
+		Stat_functionDefContext _localctx = new Stat_functionDefContext(_ctx, State);
+		EnterRule(_localctx, 14, RULE_stat_functionDef);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 80; Match(FUNCDEF_SYM);
+			State = 81; Match(IDENTIFIER);
+			State = 82; Match(LBRACKET);
+			State = 84;
+			_errHandler.Sync(this);
+			_la = _input.La(1);
+			if (_la==IDENTIFIER) {
+				{
+				State = 83; funcdefparams();
+				}
+			}
+
+			State = 86; Match(RBRACKET);
+			State = 87; Match(LBRACE);
+			State = 91;
+			_errHandler.Sync(this);
+			_la = _input.La(1);
+			while (_la==FUNCDEF_SYM || _la==IDENTIFIER) {
+				{
+				{
+				State = 88; statement();
+				}
+				}
+				State = 93;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+			}
+			State = 94; Match(RBRACE);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class Object_referenceContext : ParserRuleContext {
+		public ITerminalNode[] IDENTIFIER() { return GetTokens(storkParser.IDENTIFIER); }
+		public ITerminalNode IDENTIFIER(int i) {
+			return GetToken(storkParser.IDENTIFIER, i);
+		}
+		public ITerminalNode[] POINT() { return GetTokens(storkParser.POINT); }
+		public ITerminalNode POINT(int i) {
+			return GetToken(storkParser.POINT, i);
+		}
+		public Stat_functionCallContext[] stat_functionCall() {
+			return GetRuleContexts<Stat_functionCallContext>();
+		}
+		public Stat_functionCallContext stat_functionCall(int i) {
+			return GetRuleContext<Stat_functionCallContext>(i);
+		}
+		public Object_referenceContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_object_reference; } }
+		public override void EnterRule(IParseTreeListener listener) {
+			IstorkListener typedListener = listener as IstorkListener;
+			if (typedListener != null) typedListener.EnterObject_reference(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IstorkListener typedListener = listener as IstorkListener;
+			if (typedListener != null) typedListener.ExitObject_reference(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IstorkVisitor<TResult> typedVisitor = visitor as IstorkVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitObject_reference(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public Object_referenceContext object_reference() {
+		Object_referenceContext _localctx = new Object_referenceContext(_ctx, State);
+		EnterRule(_localctx, 16, RULE_object_reference);
+		try {
+			int _alt;
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 103;
+			_errHandler.Sync(this);
+			_alt = Interpreter.AdaptivePredict(_input,9,_ctx);
+			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.InvalidAltNumber ) {
+				if ( _alt==1 ) {
+					{
+					{
+					State = 98;
+					_errHandler.Sync(this);
+					switch ( Interpreter.AdaptivePredict(_input,8,_ctx) ) {
+					case 1:
+						{
+						State = 96; Match(IDENTIFIER);
+						}
+						break;
+
+					case 2:
+						{
+						State = 97; stat_functionCall();
+						}
+						break;
+					}
+					State = 100; Match(POINT);
+					}
+					} 
+				}
+				State = 105;
+				_errHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(_input,9,_ctx);
+			}
+			State = 106; Match(IDENTIFIER);
 			}
 		}
 		catch (RecognitionException re) {
@@ -589,7 +773,9 @@ public partial class storkParser : Parser {
 		public ITerminalNode FLOAT() { return GetToken(storkParser.FLOAT, 0); }
 		public ITerminalNode BOOLEAN() { return GetToken(storkParser.BOOLEAN, 0); }
 		public ITerminalNode STRING() { return GetToken(storkParser.STRING, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(storkParser.IDENTIFIER, 0); }
+		public Object_referenceContext object_reference() {
+			return GetRuleContext<Object_referenceContext>(0);
+		}
 		public Stat_functionCallContext stat_functionCall() {
 			return GetRuleContext<Stat_functionCallContext>(0);
 		}
@@ -616,50 +802,50 @@ public partial class storkParser : Parser {
 	[RuleVersion(0)]
 	public ValueContext value() {
 		ValueContext _localctx = new ValueContext(_ctx, State);
-		EnterRule(_localctx, 14, RULE_value);
+		EnterRule(_localctx, 18, RULE_value);
 		try {
-			State = 79;
+			State = 114;
 			_errHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(_input,6,_ctx) ) {
+			switch ( Interpreter.AdaptivePredict(_input,10,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 73; Match(INTEGER);
+				State = 108; Match(INTEGER);
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 74; Match(FLOAT);
+				State = 109; Match(FLOAT);
 				}
 				break;
 
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 75; Match(BOOLEAN);
+				State = 110; Match(BOOLEAN);
 				}
 				break;
 
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 76; Match(STRING);
+				State = 111; Match(STRING);
 				}
 				break;
 
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 77; Match(IDENTIFIER);
+				State = 112; object_reference();
 				}
 				break;
 
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 78; stat_functionCall();
+				State = 113; stat_functionCall();
 				}
 				break;
 			}
@@ -709,28 +895,97 @@ public partial class storkParser : Parser {
 	[RuleVersion(0)]
 	public ParamsContext @params() {
 		ParamsContext _localctx = new ParamsContext(_ctx, State);
-		EnterRule(_localctx, 16, RULE_params);
+		EnterRule(_localctx, 20, RULE_params);
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 86;
+			State = 121;
 			_errHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(_input,7,_ctx);
+			_alt = Interpreter.AdaptivePredict(_input,11,_ctx);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.InvalidAltNumber ) {
 				if ( _alt==1 ) {
 					{
 					{
-					State = 81; expr(0);
-					State = 82; Match(COMMA);
+					State = 116; expr(0);
+					State = 117; Match(COMMA);
 					}
 					} 
 				}
-				State = 88;
+				State = 123;
 				_errHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(_input,7,_ctx);
+				_alt = Interpreter.AdaptivePredict(_input,11,_ctx);
 			}
-			State = 89; expr(0);
+			State = 124; expr(0);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class FuncdefparamsContext : ParserRuleContext {
+		public ITerminalNode[] IDENTIFIER() { return GetTokens(storkParser.IDENTIFIER); }
+		public ITerminalNode IDENTIFIER(int i) {
+			return GetToken(storkParser.IDENTIFIER, i);
+		}
+		public ITerminalNode[] COMMA() { return GetTokens(storkParser.COMMA); }
+		public ITerminalNode COMMA(int i) {
+			return GetToken(storkParser.COMMA, i);
+		}
+		public FuncdefparamsContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_funcdefparams; } }
+		public override void EnterRule(IParseTreeListener listener) {
+			IstorkListener typedListener = listener as IstorkListener;
+			if (typedListener != null) typedListener.EnterFuncdefparams(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IstorkListener typedListener = listener as IstorkListener;
+			if (typedListener != null) typedListener.ExitFuncdefparams(this);
+		}
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IstorkVisitor<TResult> typedVisitor = visitor as IstorkVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitFuncdefparams(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public FuncdefparamsContext funcdefparams() {
+		FuncdefparamsContext _localctx = new FuncdefparamsContext(_ctx, State);
+		EnterRule(_localctx, 22, RULE_funcdefparams);
+		try {
+			int _alt;
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 131;
+			_errHandler.Sync(this);
+			_alt = Interpreter.AdaptivePredict(_input,12,_ctx);
+			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.InvalidAltNumber ) {
+				if ( _alt==1 ) {
+					{
+					{
+					State = 126; Match(IDENTIFIER);
+					State = 127; Match(IDENTIFIER);
+					State = 128; Match(COMMA);
+					}
+					} 
+				}
+				State = 133;
+				_errHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(_input,12,_ctx);
+			}
+			State = 134; Match(IDENTIFIER);
+			State = 135; Match(IDENTIFIER);
 			}
 		}
 		catch (RecognitionException re) {
@@ -772,12 +1027,12 @@ public partial class storkParser : Parser {
 	[RuleVersion(0)]
 	public OperatorContext @operator() {
 		OperatorContext _localctx = new OperatorContext(_ctx, State);
-		EnterRule(_localctx, 18, RULE_operator);
+		EnterRule(_localctx, 24, RULE_operator);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 91;
+			State = 137;
 			_la = _input.La(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ADD_OP) | (1L << TAKE_OP) | (1L << MUL_OP) | (1L << DIV_OP))) != 0)) ) {
 			_errHandler.RecoverInline(this);
@@ -828,12 +1083,12 @@ public partial class storkParser : Parser {
 	[RuleVersion(0)]
 	public Postfix_opContext postfix_op() {
 		Postfix_opContext _localctx = new Postfix_opContext(_ctx, State);
-		EnterRule(_localctx, 20, RULE_postfix_op);
+		EnterRule(_localctx, 26, RULE_postfix_op);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 93;
+			State = 139;
 			_la = _input.La(1);
 			if ( !(_la==INCREMENT_POSTFIX_OP || _la==DECREMEMT_POSTFIX_OP) ) {
 			_errHandler.RecoverInline(this);
@@ -874,39 +1129,54 @@ public partial class storkParser : Parser {
 	}
 
 	public static readonly string _serializedATN =
-		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3 \x62\x4\x2\t\x2"+
+		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3#\x90\x4\x2\t\x2"+
 		"\x4\x3\t\x3\x4\x4\t\x4\x4\x5\t\x5\x4\x6\t\x6\x4\a\t\a\x4\b\t\b\x4\t\t"+
-		"\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x3\x2\x3\x2\x3\x2\x3\x3\a\x3\x1D\n\x3\f"+
-		"\x3\xE\x3 \v\x3\x3\x4\x3\x4\x3\x4\x5\x4%\n\x4\x3\x4\x3\x4\x3\x5\x3\x5"+
-		"\x3\x5\x3\x5\x3\x5\x3\x5\x5\x5/\n\x5\x3\x5\x3\x5\x3\x5\x3\x5\x3\x5\x3"+
-		"\x5\a\x5\x37\n\x5\f\x5\xE\x5:\v\x5\x3\x6\x3\x6\x3\x6\x3\x6\x3\x6\x3\a"+
-		"\x3\a\x3\a\x3\a\x3\b\x3\b\x3\b\x5\bH\n\b\x3\b\x3\b\x3\t\x3\t\x3\t\x3\t"+
-		"\x3\t\x3\t\x5\tR\n\t\x3\n\x3\n\x3\n\a\nW\n\n\f\n\xE\nZ\v\n\x3\n\x3\n\x3"+
-		"\v\x3\v\x3\f\x3\f\x3\f\x2\x2\x3\b\r\x2\x2\x4\x2\x6\x2\b\x2\n\x2\f\x2\xE"+
-		"\x2\x10\x2\x12\x2\x14\x2\x16\x2\x2\x4\x3\x2\a\n\x4\x2\x10\x10  \x63\x2"+
-		"\x18\x3\x2\x2\x2\x4\x1E\x3\x2\x2\x2\x6$\x3\x2\x2\x2\b.\x3\x2\x2\x2\n;"+
-		"\x3\x2\x2\x2\f@\x3\x2\x2\x2\xE\x44\x3\x2\x2\x2\x10Q\x3\x2\x2\x2\x12X\x3"+
-		"\x2\x2\x2\x14]\x3\x2\x2\x2\x16_\x3\x2\x2\x2\x18\x19\x5\x4\x3\x2\x19\x1A"+
-		"\a\x2\x2\x3\x1A\x3\x3\x2\x2\x2\x1B\x1D\x5\x6\x4\x2\x1C\x1B\x3\x2\x2\x2"+
-		"\x1D \x3\x2\x2\x2\x1E\x1C\x3\x2\x2\x2\x1E\x1F\x3\x2\x2\x2\x1F\x5\x3\x2"+
-		"\x2\x2 \x1E\x3\x2\x2\x2!%\x5\n\x6\x2\"%\x5\f\a\x2#%\x5\xE\b\x2$!\x3\x2"+
-		"\x2\x2$\"\x3\x2\x2\x2$#\x3\x2\x2\x2%&\x3\x2\x2\x2&\'\a\x15\x2\x2\'\a\x3"+
-		"\x2\x2\x2()\b\x5\x1\x2)/\x5\x10\t\x2*+\a\x18\x2\x2+,\x5\x10\t\x2,-\a\x19"+
-		"\x2\x2-/\x3\x2\x2\x2.(\x3\x2\x2\x2.*\x3\x2\x2\x2/\x38\x3\x2\x2\x2\x30"+
-		"\x31\f\x4\x2\x2\x31\x32\x5\x14\v\x2\x32\x33\x5\b\x5\x5\x33\x37\x3\x2\x2"+
-		"\x2\x34\x35\f\x3\x2\x2\x35\x37\x5\x16\f\x2\x36\x30\x3\x2\x2\x2\x36\x34"+
-		"\x3\x2\x2\x2\x37:\x3\x2\x2\x2\x38\x36\x3\x2\x2\x2\x38\x39\x3\x2\x2\x2"+
-		"\x39\t\x3\x2\x2\x2:\x38\x3\x2\x2\x2;<\a\x1D\x2\x2<=\a\x1D\x2\x2=>\a\x1C"+
-		"\x2\x2>?\x5\b\x5\x2?\v\x3\x2\x2\x2@\x41\a\x1D\x2\x2\x41\x42\a\x1C\x2\x2"+
-		"\x42\x43\x5\b\x5\x2\x43\r\x3\x2\x2\x2\x44\x45\a\x1D\x2\x2\x45G\a\x18\x2"+
-		"\x2\x46H\x5\x12\n\x2G\x46\x3\x2\x2\x2GH\x3\x2\x2\x2HI\x3\x2\x2\x2IJ\a"+
-		"\x19\x2\x2J\xF\x3\x2\x2\x2KR\a\x3\x2\x2LR\a\x4\x2\x2MR\a\x5\x2\x2NR\a"+
-		"\x6\x2\x2OR\a\x1D\x2\x2PR\x5\xE\b\x2QK\x3\x2\x2\x2QL\x3\x2\x2\x2QM\x3"+
-		"\x2\x2\x2QN\x3\x2\x2\x2QO\x3\x2\x2\x2QP\x3\x2\x2\x2R\x11\x3\x2\x2\x2S"+
-		"T\x5\b\x5\x2TU\a\x16\x2\x2UW\x3\x2\x2\x2VS\x3\x2\x2\x2WZ\x3\x2\x2\x2X"+
-		"V\x3\x2\x2\x2XY\x3\x2\x2\x2Y[\x3\x2\x2\x2ZX\x3\x2\x2\x2[\\\x5\b\x5\x2"+
-		"\\\x13\x3\x2\x2\x2]^\t\x2\x2\x2^\x15\x3\x2\x2\x2_`\t\x3\x2\x2`\x17\x3"+
-		"\x2\x2\x2\n\x1E$.\x36\x38GQX";
+		"\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x4\r\t\r\x4\xE\t\xE\x4\xF\t\xF\x3\x2\x3"+
+		"\x2\x3\x2\x3\x3\a\x3#\n\x3\f\x3\xE\x3&\v\x3\x3\x4\x3\x4\x3\x4\x3\x4\x5"+
+		"\x4,\n\x4\x3\x4\x3\x4\x3\x5\x3\x5\x3\x5\x3\x5\x3\x5\x3\x5\x5\x5\x36\n"+
+		"\x5\x3\x5\x3\x5\x3\x5\x3\x5\x3\x5\x3\x5\a\x5>\n\x5\f\x5\xE\x5\x41\v\x5"+
+		"\x3\x6\x3\x6\x3\x6\x3\x6\x3\x6\x3\a\x3\a\x3\a\x3\a\x3\b\x3\b\x3\b\x5\b"+
+		"O\n\b\x3\b\x3\b\x3\t\x3\t\x3\t\x3\t\x5\tW\n\t\x3\t\x3\t\x3\t\a\t\\\n\t"+
+		"\f\t\xE\t_\v\t\x3\t\x3\t\x3\n\x3\n\x5\n\x65\n\n\x3\n\a\nh\n\n\f\n\xE\n"+
+		"k\v\n\x3\n\x3\n\x3\v\x3\v\x3\v\x3\v\x3\v\x3\v\x5\vu\n\v\x3\f\x3\f\x3\f"+
+		"\a\fz\n\f\f\f\xE\f}\v\f\x3\f\x3\f\x3\r\x3\r\x3\r\a\r\x84\n\r\f\r\xE\r"+
+		"\x87\v\r\x3\r\x3\r\x3\r\x3\xE\x3\xE\x3\xF\x3\xF\x3\xF\x2\x2\x3\b\x10\x2"+
+		"\x2\x4\x2\x6\x2\b\x2\n\x2\f\x2\xE\x2\x10\x2\x12\x2\x14\x2\x16\x2\x18\x2"+
+		"\x1A\x2\x1C\x2\x2\x4\x3\x2\a\n\x4\x2\x10\x10##\x94\x2\x1E\x3\x2\x2\x2"+
+		"\x4$\x3\x2\x2\x2\x6+\x3\x2\x2\x2\b\x35\x3\x2\x2\x2\n\x42\x3\x2\x2\x2\f"+
+		"G\x3\x2\x2\x2\xEK\x3\x2\x2\x2\x10R\x3\x2\x2\x2\x12i\x3\x2\x2\x2\x14t\x3"+
+		"\x2\x2\x2\x16{\x3\x2\x2\x2\x18\x85\x3\x2\x2\x2\x1A\x8B\x3\x2\x2\x2\x1C"+
+		"\x8D\x3\x2\x2\x2\x1E\x1F\x5\x4\x3\x2\x1F \a\x2\x2\x3 \x3\x3\x2\x2\x2!"+
+		"#\x5\x6\x4\x2\"!\x3\x2\x2\x2#&\x3\x2\x2\x2$\"\x3\x2\x2\x2$%\x3\x2\x2\x2"+
+		"%\x5\x3\x2\x2\x2&$\x3\x2\x2\x2\',\x5\n\x6\x2(,\x5\f\a\x2),\x5\xE\b\x2"+
+		"*,\x5\x10\t\x2+\'\x3\x2\x2\x2+(\x3\x2\x2\x2+)\x3\x2\x2\x2+*\x3\x2\x2\x2"+
+		",-\x3\x2\x2\x2-.\a\x15\x2\x2.\a\x3\x2\x2\x2/\x30\b\x5\x1\x2\x30\x36\x5"+
+		"\x14\v\x2\x31\x32\a\x18\x2\x2\x32\x33\x5\x14\v\x2\x33\x34\a\x19\x2\x2"+
+		"\x34\x36\x3\x2\x2\x2\x35/\x3\x2\x2\x2\x35\x31\x3\x2\x2\x2\x36?\x3\x2\x2"+
+		"\x2\x37\x38\f\x4\x2\x2\x38\x39\x5\x1A\xE\x2\x39:\x5\b\x5\x5:>\x3\x2\x2"+
+		"\x2;<\f\x3\x2\x2<>\x5\x1C\xF\x2=\x37\x3\x2\x2\x2=;\x3\x2\x2\x2>\x41\x3"+
+		"\x2\x2\x2?=\x3\x2\x2\x2?@\x3\x2\x2\x2@\t\x3\x2\x2\x2\x41?\x3\x2\x2\x2"+
+		"\x42\x43\a \x2\x2\x43\x44\a \x2\x2\x44\x45\a\x1C\x2\x2\x45\x46\x5\b\x5"+
+		"\x2\x46\v\x3\x2\x2\x2GH\a \x2\x2HI\a\x1C\x2\x2IJ\x5\b\x5\x2J\r\x3\x2\x2"+
+		"\x2KL\a \x2\x2LN\a\x18\x2\x2MO\x5\x16\f\x2NM\x3\x2\x2\x2NO\x3\x2\x2\x2"+
+		"OP\x3\x2\x2\x2PQ\a\x19\x2\x2Q\xF\x3\x2\x2\x2RS\a\x1D\x2\x2ST\a \x2\x2"+
+		"TV\a\x18\x2\x2UW\x5\x18\r\x2VU\x3\x2\x2\x2VW\x3\x2\x2\x2WX\x3\x2\x2\x2"+
+		"XY\a\x19\x2\x2Y]\a\x1A\x2\x2Z\\\x5\x6\x4\x2[Z\x3\x2\x2\x2\\_\x3\x2\x2"+
+		"\x2][\x3\x2\x2\x2]^\x3\x2\x2\x2^`\x3\x2\x2\x2_]\x3\x2\x2\x2`\x61\a\x1B"+
+		"\x2\x2\x61\x11\x3\x2\x2\x2\x62\x65\a \x2\x2\x63\x65\x5\xE\b\x2\x64\x62"+
+		"\x3\x2\x2\x2\x64\x63\x3\x2\x2\x2\x65\x66\x3\x2\x2\x2\x66h\a\x14\x2\x2"+
+		"g\x64\x3\x2\x2\x2hk\x3\x2\x2\x2ig\x3\x2\x2\x2ij\x3\x2\x2\x2jl\x3\x2\x2"+
+		"\x2ki\x3\x2\x2\x2lm\a \x2\x2m\x13\x3\x2\x2\x2nu\a\x3\x2\x2ou\a\x4\x2\x2"+
+		"pu\a\x5\x2\x2qu\a\x6\x2\x2ru\x5\x12\n\x2su\x5\xE\b\x2tn\x3\x2\x2\x2to"+
+		"\x3\x2\x2\x2tp\x3\x2\x2\x2tq\x3\x2\x2\x2tr\x3\x2\x2\x2ts\x3\x2\x2\x2u"+
+		"\x15\x3\x2\x2\x2vw\x5\b\x5\x2wx\a\x16\x2\x2xz\x3\x2\x2\x2yv\x3\x2\x2\x2"+
+		"z}\x3\x2\x2\x2{y\x3\x2\x2\x2{|\x3\x2\x2\x2|~\x3\x2\x2\x2}{\x3\x2\x2\x2"+
+		"~\x7F\x5\b\x5\x2\x7F\x17\x3\x2\x2\x2\x80\x81\a \x2\x2\x81\x82\a \x2\x2"+
+		"\x82\x84\a\x16\x2\x2\x83\x80\x3\x2\x2\x2\x84\x87\x3\x2\x2\x2\x85\x83\x3"+
+		"\x2\x2\x2\x85\x86\x3\x2\x2\x2\x86\x88\x3\x2\x2\x2\x87\x85\x3\x2\x2\x2"+
+		"\x88\x89\a \x2\x2\x89\x8A\a \x2\x2\x8A\x19\x3\x2\x2\x2\x8B\x8C\t\x2\x2"+
+		"\x2\x8C\x1B\x3\x2\x2\x2\x8D\x8E\t\x3\x2\x2\x8E\x1D\x3\x2\x2\x2\xF$+\x35"+
+		"=?NV]\x64it{\x85";
 	public static readonly ATN _ATN =
 		new ATNDeserializer().Deserialize(_serializedATN.ToCharArray());
 }

@@ -12,7 +12,7 @@ namespace stork
         static void Main(string[] args)
         {
             //Test input string.
-            string input = "int banana = 3;";
+            string input = "int b = c.d.e.f.gamr().oof; gamer();";
 
             //Debug print.
             ANTLRDebug.PrintTokens(input);
@@ -24,21 +24,11 @@ namespace stork
             var tree = ANTLRDebug.GetTree(input);
 
             //Starting the walk.
-            var visitor = new storkVisitor();
-            visitor.VisitCompileUnit(tree);
+           // var visitor = new storkVisitor();
+            //visitor.VisitCompileUnit(tree);
 
             //Logging variables at end of runtime.
-            Console.WriteLine("Types:\n");
-            foreach (var typePair in storkVisitor.types.GetTypes())
-            {
-                Console.WriteLine(typePair.Key + " containing internal type " + typePair.Value.InternalType + ".");
-            }
-
-            Console.WriteLine("\nVariables:\n");
-            foreach (var varPair in storkVisitor.scope.GetVariables())
-            {
-                Console.WriteLine(varPair.Key + ": Type " + varPair.Value.Type.Name + " with value " + varPair.Value.Value);
-            }
+            
         }
     }
 }
