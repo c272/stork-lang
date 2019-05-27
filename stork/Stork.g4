@@ -18,8 +18,8 @@ block: statement*
 statement: ( stat_define
 		   | stat_assign
 		   | stat_functionCall
-		   | stat_functionDef )
-			 ENDLINE
+		   | stat_functionDef 
+		   | stat_classDef )
 		   ;
 
 //A single expression which returns a value.
@@ -34,17 +34,27 @@ expr: value |
 // STATEMENT TYPES
 
 //A single variable definition/assignment.
-stat_define: vartype=IDENTIFIER varname=IDENTIFIER EQUALS expr;
-stat_assign: object_reference EQUALS expr;
+stat_define: vartype=IDENTIFIER varname=IDENTIFIER EQUALS expr ENDLINE;
+stat_assign: object_reference EQUALS expr ENDLINE;
 
 //A single function call.
-stat_functionCall: IDENTIFIER LBRACKET params? RBRACKET;
+stat_functionCall: IDENTIFIER LBRACKET params? RBRACKET ENDLINE;
 
 //A single function definition.
 stat_functionDef: FUNCDEF_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
 				  LBRACE
 					statement*
 				  RBRACE;
+
+//A single class definition.
+stat_classDef: (STATIC_SYM)? CLASS_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
+			   LBRACE
+					 stat_constructor?
+					(stat_define | stat_functionDef)*
+			   RBRACE;
+
+//A class constructor.
+stat_constructor: CONSTRUCTOR_SYM LBRACE statement* RBRACE;
 
 // MID LEVEL CONSTRUCTS
 
@@ -131,15 +141,21 @@ EQUALS: '=';
 FUNCDEF_SYM: 'func';
 IF_SYM: 'if';
 ELSE_SYM: 'else';
+STATIC_SYM: 'static';
+CLASS_SYM: 'class';
+CONSTRUCTOR_SYM: 'construct';
 
 //////////////////////
 
 //Identifier, second last resort for tokens.
 IDENTIFIER: [A-Za-z_][A-Za-z_0-9]*;
 
+//Comment, skip this.
+COMMENT: '//' (~[\n])* '\n' -> skip;
+
 //Skip all unnecessary whitespace.
 WS
-	: [ \n\t] -> skip
+	: [ \r\n\t] -> skip
 	;
 
 //Unknown symbol.

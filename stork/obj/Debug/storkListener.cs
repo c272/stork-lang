@@ -120,6 +120,28 @@ public interface IstorkListener : IParseTreeListener {
 	void ExitStat_functionDef([NotNull] storkParser.Stat_functionDefContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.stat_classDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStat_classDef([NotNull] storkParser.Stat_classDefContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.stat_classDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStat_classDef([NotNull] storkParser.Stat_classDefContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.stat_constructor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStat_constructor([NotNull] storkParser.Stat_constructorContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.stat_constructor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStat_constructor([NotNull] storkParser.Stat_constructorContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.object_reference"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

@@ -140,6 +140,32 @@ public partial class storkBaseListener : IstorkListener {
 	public virtual void ExitStat_functionDef([NotNull] storkParser.Stat_functionDefContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.stat_classDef"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStat_classDef([NotNull] storkParser.Stat_classDefContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.stat_classDef"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStat_classDef([NotNull] storkParser.Stat_classDefContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.stat_constructor"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStat_constructor([NotNull] storkParser.Stat_constructorContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.stat_constructor"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStat_constructor([NotNull] storkParser.Stat_constructorContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.object_reference"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

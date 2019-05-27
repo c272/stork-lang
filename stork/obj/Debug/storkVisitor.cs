@@ -89,6 +89,20 @@ public interface IstorkVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitStat_functionDef([NotNull] storkParser.Stat_functionDefContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.stat_classDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStat_classDef([NotNull] storkParser.Stat_classDefContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.stat_constructor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStat_constructor([NotNull] storkParser.Stat_constructorContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="storkParser.object_reference"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

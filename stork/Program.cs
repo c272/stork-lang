@@ -12,7 +12,7 @@ namespace stork
         static void Main(string[] args)
         {
             //Test input string.
-            string input = "c.d = 213; print(c.d);";
+            string input = @"int b = 3+2+6; print(b);";
 
             //Debug print.
             ANTLRDebug.PrintTokens(input);
