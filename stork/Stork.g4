@@ -73,8 +73,9 @@ value: INTEGER
 //A generic list of parameters.
 params: (expr COMMA)* expr;
 
-//A list of function parameters.
-funcdefparams: (IDENTIFIER IDENTIFIER COMMA)* IDENTIFIER IDENTIFIER;
+//A list of type defined parameters.
+funcdefparams: (typeparam COMMA)* typeparam;
+typeparam: typename=IDENTIFIER paramname=IDENTIFIER;
 
 //An infix operator.
 operator: ADD_OP

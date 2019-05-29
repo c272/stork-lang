@@ -197,6 +197,17 @@ public interface IstorkListener : IParseTreeListener {
 	void ExitFuncdefparams([NotNull] storkParser.FuncdefparamsContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.typeparam"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTypeparam([NotNull] storkParser.TypeparamContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.typeparam"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTypeparam([NotNull] storkParser.TypeparamContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.operator"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

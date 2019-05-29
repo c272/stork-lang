@@ -24,8 +24,8 @@ namespace stork
             var tree = ANTLRDebug.GetTree(input);
 
             //Starting the walk.
-            var visitor = new storkVisitor();
-            visitor.VisitCompileUnit(tree);
+            //var visitor = new storkVisitor();
+            //visitor.VisitCompileUnit(tree);
 
             //Logging variables at end of runtime.
             

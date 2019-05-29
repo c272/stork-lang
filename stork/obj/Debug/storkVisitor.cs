@@ -138,6 +138,13 @@ public interface IstorkVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitFuncdefparams([NotNull] storkParser.FuncdefparamsContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="storkParser.typeparam"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTypeparam([NotNull] storkParser.TypeparamContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="storkParser.operator"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

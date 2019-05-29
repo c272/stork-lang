@@ -231,6 +231,19 @@ public partial class storkBaseListener : IstorkListener {
 	public virtual void ExitFuncdefparams([NotNull] storkParser.FuncdefparamsContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.typeparam"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterTypeparam([NotNull] storkParser.TypeparamContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.typeparam"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitTypeparam([NotNull] storkParser.TypeparamContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.operator"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

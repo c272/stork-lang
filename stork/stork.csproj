@@ -68,6 +68,7 @@
     <Compile Include="StorkTestFunctions.cs" />
     <Compile Include="storkVisitor.cs" />
     <Compile Include="storkVisitorExpressions.cs" />
+    <Compile Include="storkVisitor_StructDefs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

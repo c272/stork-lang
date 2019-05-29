@@ -13,8 +13,10 @@ namespace stork
         //The direct assign value (if it's enabled).
         public Type DirectValueType;
         public object DirectValue;
-        
+
         //Instance methods and fields.
+        public Dictionary<string, StorkClass> ClassParameters;
+        public StorkFunction Constructor;
         public Dictionary<string, StorkFunction> InstanceMethods;
         public Dictionary<string, StorkClassInstance> InstanceFields;
 
