@@ -4,7 +4,7 @@
 
 *A programming language which aims to make mundane tasks less mundane.*
 ## Introduction
-Stork is a C-like programming language that aims to make the tasks that would be considered "boilerplate code" easier, by stripping the required work down, and by exporting the tasks into a vast standard library.
+Stork is a C#-like programming language that aims to make the tasks that would be considered "boilerplate code" easier, by stripping the required work down, and by exporting the tasks into a vast standard library.
 
 The language is currently not ready for general use, and is currently in the lexing/action tree stage of development. If, however, you want to contribute to the library, feel free to fork and make a pull request, which are considered on a case-by-case basis. Please remember to check the pull request templates beforehand.
 
@@ -23,7 +23,7 @@ Building in "Debug" mode is recommended for all contributions to the update bran
 
 **C-like "if" and preprocessor statements.**
 
-    ~preprocesscommand "parameter1" "parameter2";
+    #preprocesscommand "parameter1" "parameter2";
     if (somestatement && 3==4 || 5==exampleVar) {
 	    dosomething();
     }
