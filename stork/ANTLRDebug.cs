@@ -59,54 +59,5 @@ namespace stork
             var parser = new storkParser(tokens);
             return parser.compileUnit();
         }
-
-        public static void PrintStorkClassInfo(KeyValuePair<string, StorkClass> cl)
-        {
-            Console.WriteLine("Class '" + cl.Key + "':");
-            Console.WriteLine("--");
-            Console.WriteLine("Static Fields:");
-            foreach (var field in cl.Value.StaticFields)
-            {
-                Console.WriteLine(field.Key + " of type " + field.Value.Name);
-            }
-            Console.WriteLine("Instance Fields:");
-            foreach (var field in cl.Value.InstanceFields)
-            {
-                Console.WriteLine(field.Key + " of type " + field.Value.Name);
-            }
-            Console.WriteLine("--");
-            Console.WriteLine("Static Methods:");
-            foreach (var method in cl.Value.StaticMethods)
-            {
-                Console.WriteLine(method.Key + " of statement length " + method.Value.StatementBody.Count);
-            }
-            Console.WriteLine("Instance Methods:");
-            foreach (var method in cl.Value.InstanceMethods)
-            {
-                Console.WriteLine(method.Key + " of statement length " + method.Value.StatementBody.Count);
-            }
-            Console.WriteLine("--");
-            Console.WriteLine("Has Constructor?");
-            if (cl.Value.Constructor==null || cl.Value.Constructor.StatementBody.Count == 0)
-            {
-                Console.WriteLine("Default.");
-            }
-            else
-            {
-                Console.WriteLine("User defined, length "+cl.Value.Constructor.StatementBody.Count+".");
-            }
-            Console.WriteLine("--");
-            Console.WriteLine("Constructor Parameters:");
-            if (cl.Value.Constructor != null)
-            {
-                foreach (var param in cl.Value.Constructor.Parameters)
-                {
-                    Console.WriteLine(param.Key + " of type " + param.Value.Name);
-                }
-            } else
-            {
-                Console.WriteLine("None.");
-            }
-        }
     }
 }

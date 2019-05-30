@@ -1,0 +1,84 @@
+.▄▄ · ▄▄▄▄▄      ▄▄▄  ▄ •▄ 
+▐█ ▀. •██  ▪     ▀▄ █·█▌▄▌▪
+▄▀▀▀█▄ ▐█.▪ ▄█▀▄ ▐▀▀▄ ▐▀▀▄·
+▐█▄▪▐█ ▐█▌·▐█▌.▐▌▐█•█▌▐█.█▌
+ ▀▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀·▀  ▀
+ 
+ ----------------------------
+ The complete Stork language specification and principles.
+ ----------------------------
+ 
+ Contents:
+ 1. Principles
+	i.   Simplicity
+		01 - Functions
+		02 - Namespacing (or lack thereof)
+		03 - Classes
+		04 - Runtime
+	ii.  Ease of Use
+	iii. Open Source
+ 2. Language Constructs
+	i.	 Objects
+		01 - Class Objects
+		02 - Value Objects
+		03 - Function Objects
+		04 - Class Templates
+	ii.   Libraries
+	iii.  Functions
+	iv.   Core Types
+	v.    Enumerables
+	vi.   Loops
+	vii.  Checks
+	viii. Other Data Structures
+	ix.   Parsing Object References
+ 3.	Standard Library
+
+--
+SECTION 1: PRINCIPLES
+--
+
+i. Simplicity
+The language should be simple to read and understand, as well as syntactically succinct. It should not require mountains of effort to
+derive the meaning of a piece of code.
+	
+	01 - Functions
+	Functions should be simple to read and write, and don't have to be written within a class. They can be written into the global namespace,
+	and don't need special syntactical fluff to use.
+	
+	02 - Namespacing
+	Namespacing is not required, but encouraged for libraries. Namespaces are only defined for classes and libraries.
+	
+	03 - Classes
+	Classes are completely optional, this language isn't 100% object oriented. Classes should be defined at the top of a file or within a library,
+	and included before any logic.
+	
+	04 - Runtime
+	The entrypoint for a project is the top of the executed file. Any includes are evaluated as files relative to the executed file's directory.
+	
+ii. Ease of Use
+The language should be easy to use, having simple grammar as well as well written, verbose errors that don't go over the top with 600 file
+references and other mumbo jumbo that is completely useless to any sane human. If language developers want to see something that went wrong,
+there should be a console flag for that, not be on by default.
+
+It should also be simple to run and depend on, by having a single executable file for all functions of the language, and plugins for both Visual
+Studio and VS Code.
+
+iii. Open Source
+The language's source code will stay completely open source, and will be open to pull requests from anyone.
+It will be licensed under the MIT license.
+
+--
+SECTION 2: LANGUAGE CONSTRUCTS
+--
+
+i. Objects
+Objects should be the only thing that is passed as a reference, direct value or otherwise. They can contain every type of data that needs to be passed
+inside Stork, and are implemented as an interface type.
+
+	01 - Class Objects
+	Class objects contain a single class construct (StorkClass) and contain "sub-objects", which are IStorkObjects of any type (StorkClass, StorkValue,
+	StorkFunction etc).
+	
+	02 - Value Objects
+	Most values in Stork will typically be passed with a class object, however for core types like "integer", "string", "bool", and "float", a StorkValue
+	IStorkObject is used. This helps differentiate class instances from raw values. These values can be enumerable or non-enumerable,
