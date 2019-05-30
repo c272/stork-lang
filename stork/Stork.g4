@@ -15,90 +15,7 @@ compileUnit
 block: statement*
 	 ;
 
-statement: ( stat_define
-		   | stat_assign
-		   | stat_functionCall
-		   | stat_functionDef 
-		   | stat_classDef 
-		   | stat_return )
-		   ;
-
-//A single expression which returns a value.
-expr: value |
-			//Expression in precedence brackets.
-			LBRACKET value RBRACKET |
-
-			//Expressions with an operator.
-			lexpr=expr operator rexpr=expr |
-			expr postfix_op;
-
-// STATEMENT TYPES
-
-//A single variable definition/assignment.
-stat_define: vartype=IDENTIFIER varname=IDENTIFIER EQUALS expr ENDLINE;
-stat_assign: object_reference EQUALS expr ENDLINE;
-
-//A single function call.
-stat_functionCall: IDENTIFIER LBRACKET params? RBRACKET ENDLINE;
-
-//A single function definition.
-stat_functionDef: FUNCDEF_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
-				  LBRACE
-					statement*
-				  RBRACE;
-
-//A single class definition.
-stat_classDef: CLASS_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
-			   LBRACE
-					 stat_constructor?
-					(class_fieldDefine | class_functionDef)*
-			   RBRACE;
-
-//A class field or function definition. Can be static or non-static.
-class_fieldDefine: (STATIC_SYM)? vartype=IDENTIFIER varname=IDENTIFIER ENDLINE;
-class_functionDef: (STATIC_SYM)? stat_functionDef;
-
-//A class constructor.
-stat_constructor: CONSTRUCTOR_SYM LBRACE statement* RBRACE;
-
-//A return statement.
-stat_return: RETURN_SYM object_reference;
-
-// MID LEVEL CONSTRUCTS
-
-//An object reference, eg. "foo.bar().somefield"
-object_reference: (object_subreference POINT)* object_subreference;
-object_subreference: (IDENTIFIER | stat_functionCall);
-
-//Value, a thing that contains value in Stork.
-value: INTEGER 
-	   | FLOAT 
-	   | BOOLEAN 
-	   | STRING
-	   | object_reference
-	   | stat_functionCall;
-
-//A generic list of parameters.
-params: (expr COMMA)* expr;
-
-//A list of type defined parameters.
-funcdefparams: (typeparam COMMA)* typeparam;
-typeparam: typename=IDENTIFIER paramname=IDENTIFIER;
-
-//An infix operator.
-operator: ADD_OP
-		  | TAKE_OP
-		  | MUL_OP
-		  | DIV_OP
-		  ;
-
-//A prefix operator.
-//prefix_op: 
-
-//A postfix operator.
-postfix_op:   INCREMENT_POSTFIX_OP
-			| DECREMEMT_POSTFIX_OP;
-
+statement: ;
 
 /*
  * Lexer Rules
@@ -147,13 +64,6 @@ RBRACKET: ')';
 LBRACE: '{';
 RBRACE: '}';
 EQUALS: '=';
-FUNCDEF_SYM: 'func';
-IF_SYM: 'if';
-ELSE_SYM: 'else';
-STATIC_SYM: 'static';
-CLASS_SYM: 'class';
-CONSTRUCTOR_SYM: 'construct';
-RETURN_SYM: 'return';
 
 //////////////////////
 
