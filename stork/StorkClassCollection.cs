@@ -71,6 +71,12 @@ namespace stork
             Classes["c"].ReloadStaticInstance();
         }
 
+        //Returns the entire class list.
+        internal Dictionary<string, StorkClass> GetClasses()
+        {
+            return Classes;
+        }
+
         //Creates an instance of a class given a class name and value.
         public Tuple<bool, string, StorkClassInstance> CreateInstanceDV(string className, object value)
         {

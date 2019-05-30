@@ -20,7 +20,6 @@ namespace stork
         public object DirectValue;
 
         //Static/instance methods for the class.
-        public Dictionary<string, StorkClass> ClassParameters;
         public StorkFunction Constructor;
         public Dictionary<string, StorkFunction> StaticMethods;
         public Dictionary<string, StorkFunction> InstanceMethods;
@@ -65,7 +64,6 @@ namespace stork
                 DirectValue = null,
                 DirectValueType = DirectValueType,
                 Constructor = Constructor,
-                ClassParameters = ClassParameters,
                 InstanceFields = fieldInstances,
                 InstanceMethods = InstanceMethods,
                 TypeName = Name

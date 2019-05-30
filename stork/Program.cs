@@ -12,7 +12,25 @@ namespace stork
         static void Main(string[] args)
         {
             //Test input string.
-            string input = @"int b = 3+2+6; print(b);";
+            string input = @"class oceanMan(int b, int c) {
+                                
+                                construct {
+                                    b = 5;
+                                    c = 4;
+                                }
+
+                                //Define some fields.
+                                int godlyGamer;
+                                flt godlyFloat;
+
+                                //Define a function.
+                                static func internalClassFunc(int b) {
+                                    print(""BRUH"");
+                                }
+                             }
+
+                             oceanMan.internalClassFunc(3);
+                            ";
 
             //Debug print.
             ANTLRDebug.PrintTokens(input);
@@ -24,11 +42,17 @@ namespace stork
             var tree = ANTLRDebug.GetTree(input);
 
             //Starting the walk.
-            //var visitor = new storkVisitor();
-            //visitor.VisitCompileUnit(tree);
+            var visitor = new storkVisitor();
+            visitor.VisitCompileUnit(tree);
 
-            //Logging variables at end of runtime.
-            
+            //Logging classes at end of runtime.
+            var classes = storkVisitor.Classes;
+            Console.WriteLine("---------------------");
+            foreach (var cl in classes.GetClasses())
+            {
+                ANTLRDebug.PrintStorkClassInfo(cl);
+                Console.WriteLine("---------------------");
+            }
         }
     }
 }

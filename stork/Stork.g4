@@ -19,7 +19,8 @@ statement: ( stat_define
 		   | stat_assign
 		   | stat_functionCall
 		   | stat_functionDef 
-		   | stat_classDef )
+		   | stat_classDef 
+		   | stat_return )
 		   ;
 
 //A single expression which returns a value.
@@ -47,14 +48,21 @@ stat_functionDef: FUNCDEF_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
 				  RBRACE;
 
 //A single class definition.
-stat_classDef: (STATIC_SYM)? CLASS_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
+stat_classDef: CLASS_SYM IDENTIFIER LBRACKET funcdefparams? RBRACKET
 			   LBRACE
 					 stat_constructor?
-					(stat_define | stat_functionDef)*
+					(class_fieldDefine | class_functionDef)*
 			   RBRACE;
+
+//A class field or function definition. Can be static or non-static.
+class_fieldDefine: (STATIC_SYM)? vartype=IDENTIFIER varname=IDENTIFIER ENDLINE;
+class_functionDef: (STATIC_SYM)? stat_functionDef;
 
 //A class constructor.
 stat_constructor: CONSTRUCTOR_SYM LBRACE statement* RBRACE;
+
+//A return statement.
+stat_return: RETURN_SYM object_reference;
 
 // MID LEVEL CONSTRUCTS
 
@@ -145,11 +153,12 @@ ELSE_SYM: 'else';
 STATIC_SYM: 'static';
 CLASS_SYM: 'class';
 CONSTRUCTOR_SYM: 'construct';
+RETURN_SYM: 'return';
 
 //////////////////////
 
 //Identifier, second last resort for tokens.
-IDENTIFIER: [A-Za-z_][A-Za-z_0-9]*;
+IDENTIFIER: [A-Za-z_] [A-Za-z_0-9]*;
 
 //Comment, skip this.
 COMMENT: '//' (~[\n])* '\n' -> skip;

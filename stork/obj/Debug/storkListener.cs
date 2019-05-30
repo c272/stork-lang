@@ -131,6 +131,28 @@ public interface IstorkListener : IParseTreeListener {
 	void ExitStat_classDef([NotNull] storkParser.Stat_classDefContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.class_fieldDefine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterClass_fieldDefine([NotNull] storkParser.Class_fieldDefineContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.class_fieldDefine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitClass_fieldDefine([NotNull] storkParser.Class_fieldDefineContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.class_functionDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterClass_functionDef([NotNull] storkParser.Class_functionDefContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.class_functionDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitClass_functionDef([NotNull] storkParser.Class_functionDefContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.stat_constructor"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -140,6 +162,17 @@ public interface IstorkListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStat_constructor([NotNull] storkParser.Stat_constructorContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="storkParser.stat_return"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStat_return([NotNull] storkParser.Stat_returnContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="storkParser.stat_return"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStat_return([NotNull] storkParser.Stat_returnContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="storkParser.object_reference"/>.

@@ -61,9 +61,11 @@ namespace stork
             }
 
             //Class doesn't exist. Evaluate fields, functions etc. then create.
-            var Fields = new Dictionary<string, StorkClassInstance>();
-            foreach (var field in context.stat_define())
+            var InstanceFields = new Dictionary<string, StorkClass>();
+            var StaticFields = new Dictionary<string, StorkClass>();
+            foreach (var field in context.class_fieldDefine())
             {
+
                 //Get the class template for this field.
                 var classTemplate = Classes.GetClass(field.vartype.Text);
                 if (classTemplate==null)
@@ -72,21 +74,92 @@ namespace stork
                     return null;
                 }
 
-                //Evaluate the expression on the right.
-                var evaluated_expr = (StorkClassInstance)VisitExpr(field.expr());
-
-                //Check if the class instance and the field types are the same.
-                if (classTemplate.Name != evaluated_expr.TypeName)
+                //What type of field is it? Static or instance.
+                if (field.STATIC_SYM() != null)
                 {
-                    //Not the same, error out!
-                    StorkError.Print("You tried to assign the field '" + field.varname.Text + "', however you attempted to assign type '" + evaluated_expr.TypeName + "' whereas the field is of type '" + field.vartype.Text + "'.");
-                    return null;
+                    //Static.
+                    StaticFields.Add(field.varname.Text, classTemplate);
                 }
-
-                //Add field.
-                Fields.Add(field.varname.Text, evaluated_expr);
+                else
+                {
+                    //Instance.
+                    InstanceFields.Add(field.varname.Text, classTemplate);
+                }
             }
 
+            //Evaluating functions.
+            var InstanceMethods = new Dictionary<string, StorkFunction>();
+            var StaticMethods = new Dictionary<string, StorkFunction>();
+            foreach (var method in context.class_functionDef())
+            {
+                //Getting function definition.
+                var funcDef = method.stat_functionDef();
+
+                //Evaluating.
+                StorkFunction func = GetFunctionFromContext(funcDef);
+
+                //Is it static or instance?
+                if (method.STATIC_SYM() != null)
+                {
+                    //Static.
+                    StaticMethods.Add(funcDef.IDENTIFIER().GetText(), func);
+                }
+                else
+                {
+                    //Instance.
+                    InstanceMethods.Add(funcDef.IDENTIFIER().GetText(), func);
+                }
+            }
+
+            //Evaluating class parameters.
+            var params_ = new Dictionary<string, StorkClass>();
+
+            //Only run if there are actually any parameters.
+            if (context.funcdefparams() != null)
+            {
+                foreach (var param in context.funcdefparams().typeparam())
+                {
+                    //Does this class exist? Grab it.
+                    var classTemplate = Classes.GetClass(param.typename.Text);
+                    if (classTemplate == null)
+                    {
+                        StorkError.Print("Function parameter '" + param.paramname.Text + "' has invalid/nonexistant type '" + param.typename.Text + ".");
+                        return null;
+                    }
+
+                    //Got the type, now add to params.
+                    params_.Add(param.paramname.Text, classTemplate);
+                }
+            }
+
+            //Grabbing constructor statements, creating function.
+            StorkFunction constructorFunc;
+            if (context.stat_constructor() == null)
+            {
+                //Create a blank constructor.
+                constructorFunc = new StorkFunction(new List<storkParser.StatementContext>(), params_);
+            }
+            else
+            {
+                //Constructor defined.
+                constructorFunc = new StorkFunction(context.stat_constructor().statement().ToList(), params_);
+            }
+
+            //Creating a class and adding it to the collection.
+            StorkClass returnClass = new StorkClass()
+            {
+                InstanceFields = InstanceFields,
+                InstanceMethods = InstanceMethods,
+                StaticFields = StaticFields,
+                StaticMethods = StaticMethods,
+                CanDirectAssign = false,
+                DirectValue = null,
+                Name = context.IDENTIFIER().GetText(),
+                Constructor = constructorFunc
+            };
+
+            //Adding, returning.
+            Classes.AddClass(returnClass.Name, returnClass);
             return null;
         }
     }

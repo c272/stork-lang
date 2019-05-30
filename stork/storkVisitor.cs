@@ -60,6 +60,11 @@ namespace stork
                 //Function definition.
                 VisitStat_functionDef(context.stat_functionDef());
             }
+            else if (context.stat_classDef() != null)
+            {
+                //Class definition.
+                VisitStat_classDef(context.stat_classDef());
+            }
 
             return null;
         }
